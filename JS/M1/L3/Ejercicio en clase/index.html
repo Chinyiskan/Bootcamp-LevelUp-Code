@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Barra de Energía</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* Contenedor de la barra HP */
+        .hp-container {
+            margin-bottom: 30px;
+        }
+
+        .hp-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .hp-text {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .hp-value {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #27ae60;
+        }
+
+        .hp-status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Barra de progreso personalizada */
+        .progress {
+            height: 40px;
+            border-radius: 20px;
+            background-color: #ecf0f1;
+            overflow: hidden;
+            border: 3px solid #bdc3c7;
+        }
+
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Botones de control */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-control {
+            padding: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-control:active {
+            transform: translateY(0);
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1rem;
+            }
+
+            .game-container {
+                padding: 25px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+
+        <!-- Título -->
+        <h1>⚡ Energía del Guerrero</h1>
+        <p class="subtitle">Controla tu HP con sabiduría</p>
+
+        <!-- Contenedor de HP -->
+        <div class="hp-container">
+
+            <!-- Etiqueta y valor numérico -->
+            <div class="hp-label">
+                <span class="hp-text">💪 Puntos de Vida</span>
+                <span class="hp-value" id="hp-number">100</span>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="progress">
+                <div id="hp-bar" class="progress-bar bg-success" role="progressbar" style="width: 100%;">
+                    100%
+                </div>
+            </div>
+
+            <!-- Estado del personaje -->
+            <div class="hp-status" id="status">
+                <span>😊 Estado: Saludable</span>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <button id="btn-atacar" class="btn btn-control btn-danger">
+                <span class="emoji">⚔️</span>
+                Atacar
+            </button>
+
+            <button id="btn-curar" class="btn btn-control btn-success">
+                <span class="emoji">💚</span>
+                Curar
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Nuestro JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>

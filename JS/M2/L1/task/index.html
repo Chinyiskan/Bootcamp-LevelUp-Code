@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaPlus - Sistema de Turnos</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="pharmacy-header">
+        <div class="container">
+            <div class="row align-items-center py-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-heart-pulse-fill fs-1 text-danger me-3"></i>
+                        <div>
+                            <h1 class="mb-0 fs-2 fw-bold">FarmaPlus</h1>
+                            <p class="mb-0 text-muted small">Tu salud, nuestra prioridad</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="bi bi-clock-fill me-1"></i>
+                        Abierto 24/7
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+
+        <!-- Info Banner -->
+        <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Sistema de Turnos Digital</strong> - Complete el formulario para obtener su turno.
+                Recuerde que adultos mayores, personas con discapacidad y embarazadas tienen atención prioritaria.
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Formulario de Registro -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm form-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            Registro de Cliente
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label for="nombreCliente" class="form-label fw-semibold">
+                                <i class="bi bi-person-fill text-primary me-1"></i>
+                                Nombre Completo
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="nombreCliente"
+                                placeholder="Ej: Juan Pérez">
+                        </div>
+
+                        <!-- Edad -->
+                        <div class="mb-3">
+                            <label for="edadCliente" class="form-label fw-semibold">
+                                <i class="bi bi-calendar-check text-primary me-1"></i>
+                                Edad
+                            </label>
+                            <input type="number" class="form-control form-control-lg" id="edadCliente"
+                                placeholder="Ej: 45" min="1" max="120">
+                        </div>
+
+                        <!-- Servicio -->
+                        <div class="mb-3">
+                            <label for="tipoServicio" class="form-label fw-semibold">
+                                <i class="bi bi-bag-plus-fill text-primary me-1"></i>
+                                Servicio Requerido
+                            </label>
+                            <select class="form-select form-select-lg" id="tipoServicio">
+                                <option value="" selected disabled>Seleccione un servicio...</option>
+                                <option value="medicamentos">💊 Medicamentos</option>
+                                <option value="inyectologia">💉 Inyectología</option>
+                                <option value="cosmeticos">💄 Cosméticos y Cuidado Personal</option>
+                            </select>
+                        </div>
+
+                        <!-- Prioridad Especial -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch p-0">
+                                <div class="priority-checkbox-wrapper">
+                                    <input class="form-check-input" type="checkbox" id="prioridadEspecial">
+                                    <label class="form-check-label ms-2" for="prioridadEspecial">
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                        <strong>Prioridad Especial</strong>
+                                        <small class="text-muted d-block ms-4">
+                                            (Embarazo o Discapacidad)
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Generar Turno -->
+                        <button type="button" class="btn btn-primary btn-lg w-100" id="btnGenerarTurno">
+                            <i class="bi bi-ticket-perforated-fill me-2"></i>
+                            Generar Turno
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- Info de Secciones -->
+                <div class="card shadow-sm mt-3 info-card">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold mb-3">
+                            <i class="bi bi-map-fill text-info me-2"></i>
+                            Secciones de Atención
+                        </h6>
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="section-badge section-a">
+                                    <div class="fw-bold">Sección A</div>
+                                    <small>Medicamentos</small>
+                                    <div class="mt-1 small">Vent. 1-3</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="section-badge section-b">
+                                    <div class="fw-bold">Sección B</div>
+                                    <small>Inyectología</small>
+                                    <div class="mt-1 small">Vent. 4-5</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="section-badge section-c">
+                                    <div class="fw-bold">Sección C</div>
+                                    <small>Cosméticos</small>
+                                    <div class="mt-1 small">Vent. 6-8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Resultados (Ticket) -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm result-card" id="areaResultados">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt me-2"></i>
+                            Tu Turno
+                        </h5>
+                    </div>
+                    <div class="card-body p-4 text-center" id="contenidoTicket">
+
+                        <!-- Mensaje Inicial -->
+                        <div id="mensajeInicial">
+                            <i class="bi bi-ticket-detailed fs-1 text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Complete el formulario y presione "Generar Turno" para obtener su
+                                ticket de atención.</p>
+                        </div>
+
+                        <!-- Ticket (Oculto inicialmente) -->
+                        <div id="ticketGenerado" style="display: none;">
+
+                            <!-- Tipo de Turno Badge -->
+                            <div class="mb-3">
+                                <span class="badge badge-turno" id="badgeTipoTurno">
+                                    TURNO NORMAL
+                                </span>
+                            </div>
+
+                            <!-- Número de Turno -->
+                            <div class="numero-turno mb-4" id="numeroTurno">
+                                A-001
+                            </div>
+
+                            <!-- Información del Cliente -->
+                            <div class="info-cliente mb-3">
+                                <div class="mb-2">
+                                    <i class="bi bi-person-circle text-primary me-2"></i>
+                                    <strong>Cliente:</strong>
+                                    <div class="mt-1" id="nombreTicket">---</div>
+                                </div>
+                            </div>
+
+                            <!-- Separador -->
+                            <hr class="my-3">
+
+                            <!-- Sección Asignada -->
+                            <div class="seccion-asignada mb-3">
+                                <div class="fw-bold text-uppercase mb-2">Diríjase a:</div>
+                                <div class="seccion-box" id="seccionAsignada">
+                                    <i class="bi bi-geo-alt-fill me-2"></i>
+                                    <span id="nombreSeccion">Sección A</span>
+                                </div>
+                                <div class="mt-2 text-muted small" id="ventanillasInfo">
+                                    Ventanillas 1-3
+                                </div>
+                            </div>
+
+                            <!-- Mensaje Final -->
+                            <div class="alert alert-light border mt-4 mb-0">
+                                <small>
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    Por favor espere a ser llamado. Tiempo estimado: 10-15 min
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Panel de Prioridades -->
+                <div class="card shadow-sm mt-3 priority-info-card">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold mb-3">
+                            <i class="bi bi-shield-fill-check text-warning me-2"></i>
+                            Atención Prioritaria
+                        </h6>
+                        <ul class="list-unstyled mb-0 small">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Adultos mayores (≥65 años)
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Mujeres embarazadas
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Personas con discapacidad
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="pharmacy-footer py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-2">
+                <i class="bi bi-heart-pulse-fill text-danger me-2"></i>
+                <strong>FarmaPlus</strong> - Sistema de Turnos Digital
+            </p>
+            <p class="text-muted small mb-0">
+                © 2026 Desarrollado por estudiantes de programación web | Módulo 2 - Lección 1
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script Principal -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,694 @@
+/* ══════════════════════════════════════════════════════════════
+   STARTUPPAY — Design System
+   Estética: Dark fintech · Acento verde eléctrico
+   NO modificar estos estilos durante el ejercicio
+══════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ─────────────────────────────────────────────── */
+:root {
+  --sp-bg: #0a0d14;
+  --sp-surface: #111827;
+  --sp-surface-2: #1c2333;
+  --sp-border: #1e2d40;
+  --sp-border-soft: rgba(255, 255, 255, 0.06);
+
+  --sp-green: #00e676;
+  --sp-green-dim: rgba(0, 230, 118, 0.12);
+  --sp-green-glow: rgba(0, 230, 118, 0.25);
+  --sp-blue: #2979ff;
+  --sp-blue-dim: rgba(41, 121, 255, 0.12);
+  --sp-yellow: #ffd600;
+  --sp-yellow-dim: rgba(255, 214, 0, 0.12);
+  --sp-red: #ff3d57;
+  --sp-red-dim: rgba(255, 61, 87, 0.12);
+
+  --sp-text: #e8edf5;
+  --sp-text-muted: #64748b;
+  --sp-text-dim: #94a3b8;
+
+  --sp-radius: 12px;
+  --sp-radius-lg: 18px;
+  --sp-radius-xl: 24px;
+
+  --sp-font: 'Inter', system-ui, sans-serif;
+  --sp-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --sp-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sp-font);
+  background-color: var(--sp-bg);
+  color: var(--sp-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Navbar ──────────────────────────────────────────────── */
+.sp-navbar {
+  background: rgba(10, 13, 20, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--sp-border);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.sp-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--sp-green), #00acc1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #000;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sp-brand-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sp-text);
+  line-height: 1;
+}
+
+.sp-brand-tag {
+  display: block;
+  font-size: 0.65rem;
+  font-family: var(--sp-mono);
+  color: var(--sp-green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.sp-badge-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--sp-green-dim);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  color: var(--sp-green);
+  font-family: var(--sp-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.sp-pulse {
+  width: 6px;
+  height: 6px;
+  background: var(--sp-green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.7);
+  }
+}
+
+.sp-nav-date {
+  font-family: var(--sp-mono);
+  font-size: 0.72rem;
+  color: var(--sp-text-muted);
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.sp-hero {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%,
+      rgba(0, 230, 118, 0.08) 0%,
+      transparent 70%),
+    var(--sp-surface);
+  border-bottom: 1px solid var(--sp-border);
+}
+
+.sp-eyebrow {
+  font-family: var(--sp-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-green);
+  margin-bottom: 1rem;
+}
+
+.sp-hero-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.sp-gradient-text {
+  background: linear-gradient(90deg, var(--sp-green) 0%, #00bcd4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sp-hero-subtitle {
+  color: var(--sp-text-dim);
+  font-size: 1rem;
+  line-height: 1.65;
+  max-width: 480px;
+}
+
+/* ── Hero Image ──────────────────────────────────────────── */
+.sp-hero-img-wrap {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.sp-hero-img {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--sp-radius-xl);
+  border: 1px solid var(--sp-border);
+  box-shadow:
+    0 0 0 1px rgba(0, 230, 118, 0.08),
+    0 24px 64px rgba(0, 0, 0, 0.5),
+    0 0 48px rgba(0, 230, 118, 0.08);
+  transition: var(--sp-transition);
+  display: block;
+  margin: 0 auto;
+}
+
+.sp-hero-img:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 0 0 1px rgba(0, 230, 118, 0.15),
+    0 32px 80px rgba(0, 0, 0, 0.6),
+    0 0 60px rgba(0, 230, 118, 0.14);
+}
+
+@media (max-width: 767px) {
+  .sp-hero-img-wrap {
+    margin-bottom: 1rem;
+  }
+
+  .sp-hero-img {
+    max-width: 260px;
+  }
+}
+
+
+/* ── Botón Principal ─────────────────────────────────────── */
+.sp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--sp-green) 0%, #00c853 100%);
+  color: #000;
+  font-family: var(--sp-font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--sp-radius);
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  transition: var(--sp-transition);
+  box-shadow: 0 0 0 0 var(--sp-green-glow);
+  letter-spacing: 0.01em;
+}
+
+.sp-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px var(--sp-green-glow);
+  filter: brightness(1.1);
+}
+
+.sp-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ── Stat Grid ───────────────────────────────────────────── */
+.sp-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sp-stat-card {
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  padding: 1.25rem;
+  transition: var(--sp-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.sp-stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+}
+
+.sp-stat-card:hover {
+  border-color: rgba(0, 230, 118, 0.2);
+  transform: translateY(-2px);
+}
+
+.sp-stat-card--accent {
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.08) 0%, rgba(0, 230, 118, 0.03) 100%);
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+.sp-stat-icon {
+  font-size: 1.2rem;
+  color: var(--sp-green);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.sp-stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--sp-text);
+  font-family: var(--sp-mono);
+}
+
+.sp-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sp-text-muted);
+  margin: 0.1rem 0 0;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.sp-empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.sp-empty-icon {
+  font-size: 3.5rem;
+  color: var(--sp-text-muted);
+  margin-bottom: 1.5rem;
+  opacity: 0.4;
+}
+
+.sp-empty-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--sp-text-dim);
+  margin-bottom: 0.75rem;
+}
+
+.sp-empty-desc {
+  font-size: 0.9rem;
+  color: var(--sp-text-muted);
+  max-width: 360px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+
+/* Snippet decorativo tipo código */
+.sp-code-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  padding: 0.7rem 1.25rem;
+  font-family: var(--sp-mono);
+  font-size: 0.82rem;
+}
+
+.sp-code-keyword {
+  color: #c792ea;
+}
+
+.sp-code-name {
+  color: #82aaff;
+}
+
+.sp-code-paren {
+  color: var(--sp-text-dim);
+}
+
+.sp-code-brace {
+  color: var(--sp-text-dim);
+}
+
+.sp-code-comment {
+  color: var(--sp-text-muted);
+  font-style: italic;
+}
+
+/* ── Tarjeta de Empleado ─────────────────────────────────── */
+.sp-receipt-card {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-lg);
+  overflow: hidden;
+  transition: var(--sp-transition);
+  height: 100%;
+}
+
+.sp-receipt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* Barra superior de color según horas (semáforo) */
+.sp-card-stripe {
+  height: 4px;
+  width: 100%;
+}
+
+.sp-receipt-card.horas-altas .sp-card-stripe {
+  background: linear-gradient(90deg, var(--sp-green), #00c853);
+}
+
+.sp-receipt-card.horas-medias .sp-card-stripe {
+  background: linear-gradient(90deg, var(--sp-yellow), #ff9800);
+}
+
+.sp-receipt-card.horas-bajas .sp-card-stripe {
+  background: linear-gradient(90deg, var(--sp-red), #e53935);
+}
+
+/* Cabecera de la tarjeta */
+.sp-card-header {
+  padding: 1.25rem 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Colores de avatar según semáforo */
+.sp-receipt-card.horas-altas .sp-avatar {
+  background: var(--sp-green-dim);
+  color: var(--sp-green);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.sp-receipt-card.horas-medias .sp-avatar {
+  background: var(--sp-yellow-dim);
+  color: var(--sp-yellow);
+  border: 1px solid rgba(255, 214, 0, 0.3);
+}
+
+.sp-receipt-card.horas-bajas .sp-avatar {
+  background: var(--sp-red-dim);
+  color: var(--sp-red);
+  border: 1px solid rgba(255, 61, 87, 0.3);
+}
+
+.sp-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.sp-card-subtitle {
+  font-size: 0.72rem;
+  color: var(--sp-text-muted);
+  margin: 0;
+  font-family: var(--sp-mono);
+}
+
+/* Badge de estado de horas */
+.sp-hours-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: var(--sp-mono);
+  padding: 3px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.sp-receipt-card.horas-altas .sp-hours-badge {
+  background: var(--sp-green-dim);
+  color: var(--sp-green);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.sp-receipt-card.horas-medias .sp-hours-badge {
+  background: var(--sp-yellow-dim);
+  color: var(--sp-yellow);
+  border: 1px solid rgba(255, 214, 0, 0.3);
+}
+
+.sp-receipt-card.horas-bajas .sp-hours-badge {
+  background: var(--sp-red-dim);
+  color: var(--sp-red);
+  border: 1px solid rgba(255, 61, 87, 0.3);
+}
+
+/* Cuerpo de la tarjeta */
+.sp-card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.sp-row-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-row-detail:last-of-type {
+  border-bottom: none;
+}
+
+.sp-detail-label {
+  font-size: 0.77rem;
+  color: var(--sp-text-muted);
+  font-family: var(--sp-mono);
+}
+
+.sp-detail-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--sp-text-dim);
+  font-family: var(--sp-mono);
+}
+
+/* Fila total de la tarjeta */
+.sp-card-total {
+  background: var(--sp-surface-2);
+  border-top: 1px solid var(--sp-border);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sp-total-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sp-text-muted);
+  margin: 0;
+}
+
+.sp-total-amount {
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-family: var(--sp-mono);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sp-receipt-card.horas-altas .sp-total-amount {
+  color: var(--sp-green);
+}
+
+.sp-receipt-card.horas-medias .sp-total-amount {
+  color: var(--sp-yellow);
+}
+
+.sp-receipt-card.horas-bajas .sp-total-amount {
+  color: var(--sp-red);
+}
+
+/* ── Resumen Total ───────────────────────────────────────── */
+.sp-summary {
+  margin-top: 2.5rem;
+  background: linear-gradient(135deg,
+      rgba(0, 230, 118, 0.08) 0%,
+      rgba(0, 188, 212, 0.06) 100%);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  border-radius: var(--sp-radius-xl);
+  padding: 2rem 2.5rem;
+  animation: fadeUp 0.5s ease;
+}
+
+.sp-summary-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.sp-summary-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--sp-green-dim);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--sp-green);
+  flex-shrink: 0;
+}
+
+.sp-summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sp-text-muted);
+  margin: 0;
+}
+
+.sp-summary-amount {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--sp-green);
+  font-family: var(--sp-mono);
+  margin: 0;
+}
+
+.sp-summary-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sp-summary-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sp-border);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  color: var(--sp-text-dim);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.sp-footer {
+  margin-top: auto;
+  background: var(--sp-surface);
+  border-top: 1px solid var(--sp-border);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.78rem;
+  color: var(--sp-text-muted);
+}
+
+.sp-footer-code {
+  font-family: var(--sp-mono);
+  font-size: 0.72rem;
+}
+
+/* ── Animaciones ─────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sp-receipt-card {
+  animation: fadeUp 0.4s ease both;
+}
+
+/* Delay escalonado para tarjetas */
+.sp-receipt-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.sp-receipt-card:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.sp-receipt-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.sp-receipt-card:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.sp-receipt-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .sp-summary-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sp-summary-amount {
+    font-size: 1.6rem;
+  }
+
+  .sp-hero-title {
+    font-size: 1.6rem;
+  }
+}

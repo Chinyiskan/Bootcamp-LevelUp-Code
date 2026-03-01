@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗝️ El Guardián del Tesoro</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .treasure-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* Input de contraseña */
+        .password-input {
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .password-input:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 0 0.2rem rgba(243, 156, 18, 0.25);
+        }
+
+        /* Estados del input basados en clases */
+        .password-input.correcto {
+            border-color: #27ae60;
+            background-color: #d4edda;
+        }
+
+        .password-input.incorrecto {
+            border-color: #e74c3c;
+            background-color: #f8d7da;
+        }
+
+        /* Animación de vibración */
+        @keyframes vibrar {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .vibrar {
+            animation: vibrar 0.5s;
+        }
+
+        /* Botón */
+        .btn-verificar {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            border: none;
+            padding: 15px 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .btn-verificar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-verificar:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mensajes */
+        .mensaje {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            min-height: 20px;
+        }
+
+        .mensaje.vacio {
+            /* Sin estilos cuando está vacío */
+        }
+
+        /* Área del cofre */
+        .cofre-area {
+            margin-top: 30px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cofre {
+            font-size: 150px;
+            transition: all 0.5s ease;
+        }
+
+        /* Contador de intentos */
+        .intentos {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .intentos.critico {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1rem;
+            }
+
+            .treasure-container {
+                padding: 25px;
+            }
+
+            .cofre {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="treasure-container">
+
+        <!-- Título -->
+        <h1>🗝️ El Guardián del Tesoro</h1>
+        <p class="subtitle">Solo los dignos pueden abrirlo</p>
+
+        <!-- Input de contraseña -->
+        <input type="password" id="password" class="form-control password-input"
+            placeholder="Ingresa la contraseña secreta">
+
+        <!-- Botón verificar -->
+        <button id="btn-check" class="btn btn-verificar">
+            🔍 Verificar
+        </button>
+
+        <!-- Área de mensajes -->
+        <div id="mensaje" class="mensaje vacio"></div>
+
+        <!-- Contador de intentos -->
+        <div id="intentos" class="intentos">
+            Intentos restantes: <span id="numero-intentos">3</span>
+        </div>
+
+        <!-- Área del cofre -->
+        <div class="cofre-area">
+            <div id="cofre" class="cofre">🔒</div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Nuestro JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>

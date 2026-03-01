@@ -1,0 +1,149 @@
+/* ==========================================
+   🎨 ESTILOS GENERALES
+   ========================================== */
+
+/* Reseteo básico para todo el documento */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos del body */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor principal */
+.contenedor {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 500px;
+}
+
+/* Título */
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+/* Poster de la película */
+.poster {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   🎨 INPUT DE EDAD
+   ========================================== */
+
+/* Estilos base del input */
+.input-edad {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: center;
+    transition: all 0.3s ease; /* Animación suave al cambiar */
+}
+
+/* ==========================================
+   🎨 CHECKBOXES DE REQUISITOS
+   ========================================== */
+
+/* Contenedor de los checkboxes */
+.requisitos {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+/* Estilo de cada label con checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+/* Efecto hover en los labels */
+.checkbox-label:hover {
+    background-color: #f0f0f0;
+}
+
+/* Estilo de los checkboxes */
+.checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+
+/* Cuando el input tiene la clase "permitido" (✅ puede ver la película) */
+.input-edad.permitido {
+    border: 3px solid #28a745;
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Cuando el input tiene la clase "denegado" (❌ no puede ver la película) */
+.input-edad.denegado {
+    border: 3px solid #dc3545;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* ==========================================
+   🎨 BOTÓN
+   ========================================== */
+
+.boton {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* Efecto hover del botón */
+.boton:hover {
+    transform: scale(1.05);
+}
+
+/* ==========================================
+   🎨 MENSAJE DE RESULTADO
+   ========================================== */
+
+.mensaje {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    min-height: 30px;
+}

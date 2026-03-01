@@ -1,0 +1,371 @@
+/* ========================
+   VARIABLES Y RESET
+   ======================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ========================
+   HEADER
+   ======================== */
+
+header {
+    text-align: center;
+    padding: 40px 20px 20px;
+}
+
+header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #4ade80;
+    letter-spacing: -0.5px;
+}
+
+header .subtitulo {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-weight: 300;
+}
+
+
+/* ========================
+   CARD PRINCIPAL
+   ======================== */
+
+.card-principal {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px 30px;
+    max-width: 520px;
+    margin: 20px auto;
+    backdrop-filter: blur(10px);
+}
+
+.card-principal h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #f1f5f9;
+}
+
+
+/* ========================
+   CAMPOS DEL FORMULARIO
+   ======================== */
+
+.campo {
+    margin-bottom: 20px;
+}
+
+.campo label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.campo input:focus,
+.campo select:focus {
+    outline: none;
+    border-color: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+}
+
+.campo input::placeholder {
+    color: #64748b;
+}
+
+.campo small {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.campo select option {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+
+/* ========================
+   TOGGLE ECO
+   ======================== */
+
+.campo-eco {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.campo-eco label {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.toggle {
+    width: 52px;
+    height: 28px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.toggle-circulo {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #94a3b8;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.toggle.activo {
+    background: rgba(74, 222, 128, 0.3);
+}
+
+.toggle.activo .toggle-circulo {
+    transform: translateX(24px);
+    background: #4ade80;
+}
+
+.campo-eco small {
+    width: 100%;
+}
+
+
+/* ========================
+   BOTONES
+   ======================== */
+
+#btnCalcular {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 10px;
+}
+
+#btnCalcular:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+}
+
+#btnCalcular:active {
+    transform: translateY(0);
+}
+
+.btn-secundario {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    background: transparent;
+    color: #94a3b8;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 20px;
+}
+
+.btn-secundario:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+}
+
+
+/* ========================
+   RESULTADOS
+   ======================== */
+
+.indicador {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.icono-grande {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.texto-resultado {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.texto-resultado.exito {
+    color: #4ade80;
+}
+
+.texto-resultado.fallo {
+    color: #f87171;
+}
+
+.detalles {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 10px;
+    padding-top: 15px;
+}
+
+.detalle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detalle-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.detalle-valor {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+
+/* ========================
+   ADVERTENCIA Y SUGERENCIA
+   ======================== */
+
+.advertencia {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 18px;
+    color: #fca5a5;
+    font-size: 0.9rem;
+}
+
+.sugerencia {
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 12px;
+    color: #fde68a;
+    font-size: 0.9rem;
+}
+
+
+/* ========================
+   ERROR
+   ======================== */
+
+.error {
+    color: #f87171;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 12px;
+}
+
+
+/* ========================
+   FOOTER
+   ======================== */
+
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: #475569;
+    font-size: 0.8rem;
+    margin-top: auto;
+}
+
+
+/* ========================
+   CLASES UTILITARIAS
+   ======================== */
+
+.oculto {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+
+/* ========================
+   ANIMACIONES
+   ======================== */
+
+.card-principal {
+    animation: aparecer 0.4s ease-out;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ========================
+   RESPONSIVE
+   ======================== */
+
+@media (max-width: 576px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-principal {
+        margin: 15px;
+        padding: 25px 20px;
+    }
+}

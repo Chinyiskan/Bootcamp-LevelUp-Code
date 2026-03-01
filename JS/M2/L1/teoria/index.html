@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Verificador de Edad - Película de Terror</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Contenedor principal de la página -->
+    <div class="contenedor">
+
+        <!-- Título principal -->
+        <h1>🎬 ¿Puedes ver esta película?</h1>
+
+        <!-- Imagen del poster de la película -->
+        <img src="poster.png" alt="Poster de película de terror" class="poster">
+
+        <!-- Input para que el usuario escriba su edad -->
+        <input type="number" id="inputEdad" placeholder="Ingresa tu edad" class="input-edad">
+
+        <!-- Checkboxes para requisitos adicionales -->
+        <div class="requisitos">
+            <label class="checkbox-label">
+                <input type="checkbox" id="checkValentia">
+                🦸 Soy valiente
+            </label>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="checkAcompañado">
+                👨‍👩‍👦 Vengo con un adulto
+            </label>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="checkMiedo">
+                😱 Tengo miedo extremo a los zombies
+            </label>
+        </div>
+
+        <!-- Botón para verificar la edad -->
+        <button id="btnVerificar" class="boton">Verificar Edad</button>
+
+        <!-- Aquí se mostrará el mensaje de resultado -->
+        <p id="mensaje" class="mensaje"></p>
+
+    </div>
+
+    <!-- Conectamos nuestro archivo JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>

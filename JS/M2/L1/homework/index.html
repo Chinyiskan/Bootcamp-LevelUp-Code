@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 La Orden del Bit - Misión XAR-7</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Estilo retro -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --pixel-blue: #0066ff;
+            --pixel-red: #ff0044;
+            --pixel-green: #00ff88;
+            --pixel-gold: #ffcc00;
+            --pixel-purple: #cc00ff;
+            --dark-bg: #0a0e27;
+            --screen-glow: rgba(0, 255, 136, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-bg);
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 136, 0.03) 2px, rgba(0, 255, 136, 0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 255, 136, 0.03) 2px, rgba(0, 255, 136, 0.03) 4px);
+            min-height: 100vh;
+            font-family: 'VT323', monospace;
+            color: var(--pixel-green);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Efecto CRT scanlines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Contenedor principal estilo arcade */
+        .game-container {
+            max-width: 900px;
+            margin: 40px auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header estilo retro */
+        .game-header {
+            background: linear-gradient(135deg, #1a1a3e 0%, #0a0e27 100%);
+            border: 4px solid var(--pixel-green);
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow:
+                0 0 20px var(--screen-glow),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .game-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--pixel-green);
+            text-align: center;
+            text-shadow:
+                0 0 10px var(--pixel-green),
+                0 0 20px var(--pixel-green),
+                2px 2px 0 rgba(0, 0, 0, 0.5);
+            margin: 0;
+            letter-spacing: 2px;
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px var(--pixel-green), 0 0 20px var(--pixel-green), 2px 2px 0 rgba(0, 0, 0, 0.5);
+            }
+
+            50% {
+                text-shadow: 0 0 20px var(--pixel-green), 0 0 40px var(--pixel-green), 2px 2px 0 rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        .subtitle {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--pixel-gold);
+            margin-top: 10px;
+            letter-spacing: 3px;
+        }
+
+        /* Pantalla de juego */
+        .game-screen {
+            background: #000;
+            border: 6px solid var(--pixel-blue);
+            box-shadow:
+                0 0 30px var(--screen-glow),
+                inset 0 0 50px rgba(0, 255, 136, 0.1);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Imagen del juego */
+        .game-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Texto narrativo */
+        .narrative-text {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 25px;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: var(--pixel-green);
+            border-top: 3px solid var(--pixel-green);
+        }
+
+        .narrative-text p {
+            margin-bottom: 15px;
+        }
+
+        .narrative-text strong {
+            color: var(--pixel-gold);
+        }
+
+        /* Botones estilo retro arcade */
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.9rem;
+            padding: 15px 30px;
+            border: 4px solid currentColor;
+            background: transparent;
+            color: var(--pixel-green);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .btn-pixel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        .btn-pixel:hover::before {
+            left: 0;
+        }
+
+        .btn-pixel:hover {
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .btn-pixel:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary-pixel {
+            color: var(--pixel-green);
+            border-color: var(--pixel-green);
+        }
+
+        .btn-option-a {
+            color: var(--pixel-blue);
+            border-color: var(--pixel-blue);
+        }
+
+        .btn-option-b {
+            color: var(--pixel-red);
+            border-color: var(--pixel-red);
+        }
+
+        .btn-secret {
+            color: var(--pixel-purple);
+            border-color: var(--pixel-purple);
+            animation: secretGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes secretGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px var(--pixel-purple);
+            }
+
+            50% {
+                box-shadow: 0 0 30px var(--pixel-purple), 0 0 50px var(--pixel-purple);
+            }
+        }
+
+        .btn-restart {
+            color: var(--pixel-gold);
+            border-color: var(--pixel-gold);
+        }
+
+        /* Contenedor de botones */
+        .button-container {
+            text-align: center;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Feedback de final */
+        .ending-feedback {
+            padding: 30px;
+            margin-top: 20px;
+            border: 4px solid;
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1rem;
+            line-height: 2;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ending-good {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--pixel-green);
+            color: var(--pixel-green);
+        }
+
+        .ending-bad {
+            background: rgba(255, 0, 68, 0.1);
+            border-color: var(--pixel-red);
+            color: var(--pixel-red);
+        }
+
+        .ending-secret {
+            background: rgba(204, 0, 255, 0.1);
+            border-color: var(--pixel-purple);
+            color: var(--pixel-purple);
+            box-shadow: 0 0 30px rgba(204, 0, 255, 0.5);
+        }
+
+        .ending-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1rem;
+            }
+
+            .btn-pixel {
+                font-size: 0.7rem;
+                padding: 12px 20px;
+                margin: 8px;
+            }
+
+            .narrative-text {
+                font-size: 1.2rem;
+                padding: 20px;
+            }
+
+            .ending-feedback {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Efecto de parpadeo para texto importante */
+        .blink {
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Contenedor principal del juego -->
+    <div class="game-container">
+
+        <!-- Header -->
+        <div class="game-header">
+            <h1 class="game-title">⚔️ LA ORDEN DEL BIT ⚔️</h1>
+            <p class="subtitle">MISIÓN: XAR-7</p>
+        </div>
+
+        <!-- Pantalla del juego -->
+        <div class="game-screen">
+
+            <!-- Imagen actual -->
+            <img id="game-image" src="images/1.png" alt="Escena del juego" class="game-image">
+
+            <!-- Texto narrativo -->
+            <div class="narrative-text" id="narrative-text">
+                <!-- El texto se inyectará con JavaScript -->
+            </div>
+
+            <!-- Contenedor de botones -->
+            <div class="button-container" id="button-container">
+                <!-- Los botones se inyectarán con JavaScript -->
+            </div>
+
+            <!-- Feedback del final -->
+            <div id="ending-feedback" class="hidden">
+                <!-- El feedback se inyectará con JavaScript -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Nuestro script -->
+    <script src="script.js"></script>
+</body>
+
+</html>

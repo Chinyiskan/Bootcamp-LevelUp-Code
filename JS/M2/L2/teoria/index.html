@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funciones vs Espagueti 🍝</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #f8fafc;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+
+        .contenedor {
+            display: flex;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .columna {
+            flex: 1;
+            min-width: 300px;
+            max-width: 420px;
+        }
+
+        .etiqueta {
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .etiqueta.mala {
+            background: #991b1b;
+            color: #fecaca;
+        }
+
+        .etiqueta.buena {
+            background: #166534;
+            color: #bbf7d0;
+        }
+
+        .tarjeta {
+            border-radius: 0 0 16px 16px;
+            padding: 24px;
+            min-height: 200px;
+        }
+
+        .tarjeta.mala {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .tarjeta.buena {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .producto {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+        }
+
+        .producto-nombre {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .producto-precio {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .producto-total {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #facc15;
+            margin-top: 4px;
+        }
+
+        .vs {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #475569;
+            align-self: center;
+            text-align: center;
+        }
+
+        .instruccion {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #a5b4fc;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .instruccion code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 700px) {
+            .contenedor {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .vs {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🍝 Espagueti vs 🧩 Funciones</h1>
+    <p class="subtitulo">Mismo resultado, diferente forma de escribirlo. ¿Cuál prefieres mantener?</p>
+
+    <div class="contenedor">
+
+        <!-- Columna ESPAGUETI -->
+        <div class="columna">
+            <div class="etiqueta mala">❌ CÓDIGO ESPAGUETI</div>
+            <div class="tarjeta mala">
+                <div class="producto">
+                    <div class="producto-nombre">🍔 Hamburguesa</div>
+                    <div class="producto-precio">Precio base: $8.000</div>
+                    <div class="producto-total" id="espagueti1"></div>
+                </div>
+                <div class="producto">
+                    <div class="producto-nombre">🍟 Papas</div>
+                    <div class="producto-precio">Precio base: $3.500</div>
+                    <div class="producto-total" id="espagueti2"></div>
+                </div>
+                <div class="producto">
+                    <div class="producto-nombre">🥤 Bebida</div>
+                    <div class="producto-precio">Precio base: $2.000</div>
+                    <div class="producto-total" id="espagueti3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <!-- Columna FUNCIONES -->
+        <div class="columna">
+            <div class="etiqueta buena">✅ CON FUNCIONES</div>
+            <div class="tarjeta buena">
+                <div class="producto">
+                    <div class="producto-nombre">🍔 Hamburguesa</div>
+                    <div class="producto-precio">Precio base: $8.000</div>
+                    <div class="producto-total" id="funcion1"></div>
+                </div>
+                <div class="producto">
+                    <div class="producto-nombre">🍟 Papas</div>
+                    <div class="producto-precio">Precio base: $3.500</div>
+                    <div class="producto-total" id="funcion2"></div>
+                </div>
+                <div class="producto">
+                    <div class="producto-nombre">🥤 Bebida</div>
+                    <div class="producto-precio">Precio base: $2.000</div>
+                    <div class="producto-total" id="funcion3"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="instruccion">
+        💡 Abre <code>script.js</code> y compara ambas versiones.<br>
+        Hacen exactamente lo mismo, pero una se puede mantener y la otra es un desastre.
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

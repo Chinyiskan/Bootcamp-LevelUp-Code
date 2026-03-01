@@ -1,0 +1,327 @@
+/* ============================================
+   FARMAPLUS - SISTEMA DE TURNOS
+   Estilos Personalizados
+   ============================================ */
+
+/* Variables de Color */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-bg: #f8f9fa;
+    --dark-text: #212529;
+}
+
+/* Fuente General */
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    min-height: 100vh;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.pharmacy-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pharmacy-header h1 {
+    color: white;
+    letter-spacing: -0.5px;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.form-card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    border: none;
+    padding: 1.25rem;
+}
+
+/* ============================================
+   FORMULARIO
+   ============================================ */
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-label {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Checkbox de Prioridad */
+.priority-checkbox-wrapper {
+    background: #fff3cd;
+    border: 2px solid var(--warning-color);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.priority-checkbox-wrapper:hover {
+    background: #ffe69c;
+}
+
+.form-check-input {
+    width: 2.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+/* Botón Principal */
+#btnGenerarTurno {
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+#btnGenerarTurno:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+}
+
+#btnGenerarTurno:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   SECCIONES INFO
+   ============================================ */
+.info-card,
+.priority-info-card {
+    border: none;
+    border-radius: 12px;
+    background: white;
+}
+
+.section-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.section-badge:hover {
+    transform: scale(1.05);
+}
+
+.section-a {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.section-b {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.section-c {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* ============================================
+   TARJETA DE RESULTADOS (TICKET)
+   ============================================ */
+.result-card {
+    border: none;
+    border-radius: 15px;
+    min-height: 400px;
+}
+
+#contenidoTicket {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Badge de Tipo de Turno */
+.badge-turno {
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Número de Turno */
+.numero-turno {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: pulseNumber 2s ease-in-out infinite;
+}
+
+@keyframes pulseNumber {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Información del Cliente */
+.info-cliente {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+/* Sección Asignada */
+.seccion-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Animación de Aparición del Ticket */
+@keyframes slideInTicket {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ticket-aparece {
+    animation: slideInTicket 0.6s ease-out;
+}
+
+/* ============================================
+   CLASES DE PRIORIDAD
+   ============================================ */
+/* Turno Prioritario - Rojo/Amarillo */
+.turno-prioritario .badge-turno {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+    color: white;
+}
+
+.turno-prioritario .numero-turno {
+    color: #dc3545;
+}
+
+.turno-prioritario .seccion-box {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+/* Turno Normal - Azul */
+.turno-normal .badge-turno {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+
+.turno-normal .numero-turno {
+    color: #0d6efd;
+}
+
+.turno-normal .seccion-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.pharmacy-footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pharmacy-footer .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .numero-turno {
+        font-size: 3rem;
+    }
+    
+    .section-badge {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+}
+
+/* ============================================
+   ANIMACIONES ADICIONALES
+   ============================================ */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Efecto de Shake para errores */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}

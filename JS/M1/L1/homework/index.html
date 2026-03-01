@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚦 Semáforo Interactivo</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 600px;
+        }
+
+        /* Título */
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* Caja del semáforo */
+        .traffic-light-box {
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 30px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 5px solid #1a252f;
+        }
+
+        /* Contenedor de las luces */
+        .lights-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Cada luz del semáforo */
+        .light {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #1a252f;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.5),
+                        0 5px 20px rgba(0,0,0,0.3);
+            /* Transición suave para el cambio de color */
+            transition: all 0.4s ease;
+        }
+
+        /* Estado apagado (por defecto) */
+        .light.off {
+            background: #2c2c2c;
+            opacity: 0.4;
+        }
+
+        /* Luz roja encendida */
+        .light.red.on {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+            box-shadow: 0 0 30px #ff6b6b,
+                        0 0 60px rgba(255, 107, 107, 0.6),
+                        inset 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 1;
+        }
+
+        /* Luz amarilla encendida */
+        .light.yellow.on {
+            background: radial-gradient(circle at 30% 30%, #ffd93d, #f59f00);
+            box-shadow: 0 0 30px #ffd93d,
+                        0 0 60px rgba(255, 217, 61, 0.6),
+                        inset 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 1;
+        }
+
+        /* Luz verde encendida */
+        .light.green.on {
+            background: radial-gradient(circle at 30% 30%, #51cf66, #2b8a3e);
+            box-shadow: 0 0 30px #51cf66,
+                        0 0 60px rgba(81, 207, 102, 0.6),
+                        inset 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 1;
+        }
+
+        /* Panel de control (botones) */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos de botones */
+        .btn-control {
+            padding: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-control:active {
+            transform: translateY(0);
+        }
+
+        /* Botón rojo */
+        .btn-red {
+            background: linear-gradient(145deg, #ff6b6b, #c92a2a);
+            color: white;
+        }
+
+        /* Botón amarillo */
+        .btn-yellow {
+            background: linear-gradient(145deg, #ffd93d, #f59f00);
+            color: #2c3e50;
+        }
+
+        /* Botón verde */
+        .btn-green {
+            background: linear-gradient(145deg, #51cf66, #2b8a3e);
+            color: white;
+        }
+
+        /* Botón apagar todo */
+        .btn-off {
+            background: linear-gradient(145deg, #495057, #212529);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        /* Panel de estado */
+        .status-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .status-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Responsivo */
+        @media (max-width: 576px) {
+            .light {
+                width: 100px;
+                height: 100px;
+            }
+
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Título -->
+        <h1>🚦 Semáforo Interactivo</h1>
+        <p class="subtitle">Controla las luces del semáforo con los botones</p>
+
+        <!-- Caja del semáforo -->
+        <div class="traffic-light-box">
+            <!-- Contenedor de luces -->
+            <div class="lights-container">
+                <!-- Luz roja -->
+                <div class="light red off" id="redLight"></div>
+                
+                <!-- Luz amarilla -->
+                <div class="light yellow off" id="yellowLight"></div>
+                
+                <!-- Luz verde -->
+                <div class="light green off" id="greenLight"></div>
+            </div>
+
+            <!-- Panel de control -->
+            <div class="control-panel">
+                <button class="btn-control btn-red" id="btnRed">🔴 Rojo</button>
+                <button class="btn-control btn-yellow" id="btnYellow">🟡 Amarillo</button>
+                <button class="btn-control btn-green" id="btnGreen">🟢 Verde</button>
+                <button class="btn-control btn-off" id="btnOff">⚫ Apagar Todo</button>
+            </div>
+
+            <!-- Panel de estado -->
+            <div class="status-panel">
+                <div class="status-label">Estado actual</div>
+                <div class="status-text" id="statusText">Apagado</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (opcional para este ejercicio) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Nuestro JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

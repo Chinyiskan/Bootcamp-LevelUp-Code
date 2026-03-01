@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Eco-Trip Planner - Calculadora de autonomía para bicicletas eléctricas">
+    <title>Eco-Trip Planner 🌿</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <h1>🌿 Eco-Trip Planner</h1>
+            <p class="subtitulo">Planifica tu ruta en bici eléctrica sin quedarte sin batería</p>
+        </div>
+    </header>
+
+    <!-- Formulario Principal -->
+    <main class="container">
+        <section id="formulario" class="card-principal">
+            <h2>📍 Planifica tu Ruta</h2>
+
+            <!-- Input: Kilómetros -->
+            <div class="campo">
+                <label for="inputKm">Kilómetros de la ruta</label>
+                <input type="number" id="inputKm" placeholder="Ej: 25" min="1">
+                <small>¿Cuántos km tiene tu ruta?</small>
+            </div>
+
+            <!-- Input: Batería -->
+            <div class="campo">
+                <label for="inputBateria">Carga actual de batería (%)</label>
+                <input type="number" id="inputBateria" placeholder="Ej: 80" min="0" max="100">
+                <small>Porcentaje actual de tu bici</small>
+            </div>
+
+            <!-- Select: Terreno -->
+            <div class="campo">
+                <label for="selectTerreno">Tipo de terreno</label>
+                <select id="selectTerreno">
+                    <option value="plano">🛣️ Plano - Fácil</option>
+                    <option value="subida">⛰️ Subida - Moderado</option>
+                    <option value="montaña">🏔️ Montaña - Difícil</option>
+                </select>
+            </div>
+
+            <!-- Toggle: Modo Eco -->
+            <div class="campo campo-eco">
+                <label for="toggleEco">🍃 Modo Eco (-20% consumo)</label>
+                <div id="toggleEco" class="toggle" onclick="toggleModoEco()">
+                    <div class="toggle-circulo"></div>
+                </div>
+                <small id="textoEco">Desactivado</small>
+            </div>
+
+            <!-- Botón Calcular -->
+            <button id="btnCalcular" onclick="calcularRuta()">⚡ Calcular Autonomía</button>
+
+            <!-- Mensaje de error -->
+            <p id="mensajeError" class="error oculto">⚠️ Completa todos los campos correctamente</p>
+        </section>
+
+        <!-- Resultados -->
+        <section id="resultados" class="card-principal oculto">
+            <h2>📊 Resultado de tu Ruta</h2>
+
+            <!-- Indicador principal -->
+            <div id="indicadorPrincipal" class="indicador">
+                <span id="iconoResultado" class="icono-grande"></span>
+                <p id="textoResultado" class="texto-resultado"></p>
+            </div>
+
+            <!-- Detalles -->
+            <div class="detalles">
+                <div class="detalle-item">
+                    <span class="detalle-label">🔋 Consumo estimado</span>
+                    <span id="consumoEstimado" class="detalle-valor"></span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">🔋 Batería restante</span>
+                    <span id="bateriaRestante" class="detalle-valor"></span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">📏 KM de sobra</span>
+                    <span id="kmSobra" class="detalle-valor"></span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">⏱️ Tiempo estimado</span>
+                    <span id="tiempoEstimado" class="detalle-valor"></span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">🌱 CO₂ ahorrado vs auto</span>
+                    <span id="co2Ahorrado" class="detalle-valor"></span>
+                </div>
+            </div>
+
+            <!-- Advertencia -->
+            <div id="advertencia" class="advertencia oculto">
+                <p id="textoAdvertencia"></p>
+            </div>
+
+            <!-- Sugerencia -->
+            <div id="sugerencia" class="sugerencia oculto">
+                <p id="textoSugerencia"></p>
+            </div>
+
+            <!-- Botón volver -->
+            <button id="btnVolver" class="btn-secundario" onclick="volverAlFormulario()">🔄 Nueva Ruta</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Eco-Trip Planner © 2026 — Demo para The Bit Masters</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
