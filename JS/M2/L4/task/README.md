@@ -1,4 +1,4 @@
-# AniTrack — Mi Lista de Animes 🎌
+# MercaYa — ShopRegister 🛒
 
 > **M2L4 · Sprint de clase · ~20 min**
 
@@ -6,31 +6,17 @@
 
 ## El contexto
 
-El equipo de producto de **AniTrack** necesita lanzar el MVP esta semana. El diseñador ya entregó el HTML y el CSS. El backend todavía no está listo, así que por ahora los datos viven en el frontend.
+El equipo de frontend de **MercaYa** terminó el diseño esta mañana.
+HTML listo, CSS listo, formulario en pantalla.
+Pero el sistema no hace nada todavía.
 
-Tu Tech Lead te asigna el ticket:
+Tu Tech Lead se acerca y dice:
 
-> *"El formulario ya está en pantalla pero no hace nada. Necesito que valides los campos, guardes cada anime en la lista y renderices las tarjetas automáticamente. El botón no puede agregar basura a la base de datos — cada campo tiene sus reglas."*
+> *"Necesito que este formulario funcione antes del deploy de esta tarde.
+> Valida cada campo con sus reglas y si todo está correcto muestra la
+> tarjeta de confirmación. Sin validación no hay registro."*
 
-Abres VS Code. El archivo `script.js` te espera.
-
----
-
-## 🧮 La lógica antes del código
-
-Antes de escribir, entiende el flujo:
-
-```
-Usuario llena el formulario
-       ↓
-submit interceptado con preventDefault()
-       ↓
-¿Los datos son válidos? → NO → mostrarError() + return
-       ↓ SÍ
-Crear objeto anime → push a listaAnimes
-       ↓
-renderizarLista() se encarga del resto ✅
-```
+Abres el `script.js`. Hay dos tickets esperándote.
 
 ---
 
@@ -38,45 +24,62 @@ renderizarLista() se encarga del resto ✅
 
 | Campo | Regla |
 |-------|-------|
-| Título | No puede estar vacío |
-| Género | Debe estar seleccionado |
-| Episodios | Número mayor a 0 |
-| Puntuación | Entre 1 y 10 |
+| Nombre | Obligatorio, mínimo 3 caracteres |
+| Fecha de nacimiento | Obligatorio, mayor de 18 años |
+| País | Debe estar seleccionado |
+| Ciudad | Obligatorio |
+| Correo | Debe contener `@` y `.` |
+| Teléfono | Exactamente 10 dígitos |
+| Dirección | Obligatorio |
+| Contraseña | Mínimo 8 caracteres |
+| Confirmar contraseña | Debe coincidir con la anterior |
 
 ---
 
-## 🎫 Tu ticket — 20 min
+## 🎫 Ticket 1 — Funciones de validación · 10 min
 
-Tu misión se concentra en una sola función: `manejarEnvio()`. El renderizado, las tarjetas y el contador ya están resueltos — tú solo tienes que interceptar el formulario, validar los datos y, si todo pasa, guardar el anime y llamar a `renderizarLista()`.
+En la **Sección 1** del `script.js` encontrarás las funciones de validación.
+Las dos primeras ya están implementadas como guía.
+Completa las demás siguiendo el mismo patrón:
 
-Completa los `TODO` del `script.js` en orden.
+> Si el dato no cumple la regla → `return false`. Si cumple → `return true`.
 
-> 💡 **Tip del Tech Lead:** `preventDefault()` es lo primero que escribes dentro del manejador. Siempre. Sin eso, la página recarga antes de que tu código pueda hacer nada.
+## 🎫 Ticket 2 — Manejador del submit · 10 min
 
-> 💡 **Tip del Tech Lead:** Cada validación fallida debe llamar a `mostrarError()` y terminar con `return`. Si el código llega al TODO 5, es porque todos los filtros pasaron.
+En la **Sección 3** encontrarás el manejador del formulario.
+El patrón del campo nombre ya está completo en cada paso.
+Replícalo para los 8 campos restantes.
 
-> 💡 **Tip del Tech Lead:** `crearTarjeta()` recibe un objeto anime con cuatro propiedades. Léela antes de construir el objeto en el TODO 5 para saber exactamente cómo nombrarlo.
+> ⚠️ **Importante:** Termina el Ticket 1 antes de empezar el Ticket 2.
+> Tus funciones tienen que existir para poder llamarlas en el submit.
 
 ---
 
 ## 🔥 Extra Bonus — 10 min
 
-Al final de `renderizarLista()`, calcula el **promedio de puntuación** de todos los animes de la lista usando un `for` con acumulador. Muéstralo en el elemento `#statPromedio`.
+La función `validarEmail()` actual tiene un problema: `"@."` pasaría
+la validación porque contiene `@` y `.`.
 
-Resultado esperado: `⭐ 8.3 promedio`
+Mejórala para que verifique:
+
+- Que haya al menos un carácter **antes** del `@`
+- Que haya al menos un carácter **entre** el `@` y el `.`
+- Que haya al menos un carácter **después** del `.`
+
+> 💡 Pista: `email.indexOf("@")` te dice en qué posición está el `@`.
 
 ---
 
 ## 🎓 Consejos del Tech Lead
 
-> *"Lee el flujo completo antes de escribir una sola línea. Entiende qué función llama a qué."*
+> *"Escribe una función, pruébala en consola, confirma que funciona. Luego pasa a la siguiente. No intentes completar las 7 de un solo golpe."*
 
-> *"Un `return` dentro de la validación no es un error — es una salida de emergencia intencional. Si los datos no pasan, el código no debe continuar."*
+> *"Si el submit no hace nada al presionar el botón, revisa la consola. El error casi siempre está ahí esperándote."*
 
-> *"Si el formulario recarga la página al hacer submit, ya sabes qué olvidaste."*
+> *"La contraseña nunca va en el objeto de datos que le muestras al usuario. Nunca."*
 
 ---
 
-**Módulo:** 2 — Lección 4: Formularios y Validación
-**Dificultad:** ⭐⭐ Intermedio
+**Módulo:** 2 — Lección 4: Formularios y Validación  
+**Dificultad:** ⭐⭐ Intermedio  
 **Tiempo:** 20 min + 10 min extra bonus

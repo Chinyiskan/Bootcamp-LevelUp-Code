@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form id="miFormulario">
+        <input type="text" id="nombre" placeholder="Tu nombre" />
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        document.getElementById("miFormulario").addEventListener("submit", function (evento) {
+            evento.preventDefault();
+
+            let nombre = document.getElementById("nombre").value.trim(); // 👈 única diferencia
+
+            if (nombre === "") {
+                console.log("❌ Espacios no cuentan. Campo vacío.");
+                return;
+            }
+
+            console.log("✅ Nombre válido: " + nombre);
+        });
+    </script>
+</body>
+
+</html>

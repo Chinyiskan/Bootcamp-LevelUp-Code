@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- Ampliar el HTML -->
+    <form id="miFormulario">
+        <input type="text" id="nombre" placeholder="Tu nombre" />
+        <input type="text" id="usuario" placeholder="Nombre de usuario" />
+        <input type="number" id="edad" placeholder="Tu edad" />
+        <button type="submit">Registrarse</button>
+    </form>
+
+    <script>
+        document.getElementById("miFormulario").addEventListener("submit", function (evento) {
+            evento.preventDefault();
+
+            let nombre = document.getElementById("nombre").value.trim();
+            let usuario = document.getElementById("usuario").value.trim();
+            let edad = Number(document.getElementById("edad").value);
+
+            if (nombre == "") {
+                console.log("❌ Espacios no cuentan. Campo vacío.");
+                return;
+            }
+
+            if (usuario === "") {
+                console.log("❌ El usuario es obligatorio.");
+                return; // Para aquí. No sigue.
+            }
+
+            if (edad < 18) {
+                console.log("❌ Debes ser mayor de edad.");
+                return; // Para aquí. No sigue.
+            }
+
+            // Si llegó hasta acá, todo pasó el filtro ✅
+            console.log("✅ Registro exitoso para el usuario " + usuario + " con el nombre " + nombre + " y edad " + edad);
+        });
+    </script>
+</body>
+
+</html>

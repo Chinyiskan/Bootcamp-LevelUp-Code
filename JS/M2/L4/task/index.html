@@ -2,125 +2,390 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AniTrack — Mi Lista</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Regístrate en MercaYa — La tienda online que te trae todo a tu puerta. Crea tu cuenta gratis y empieza a comprar hoy." />
+    <title>Crear cuenta — MercaYa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <!-- ── NAVBAR ── -->
-  <nav class="navbar">
-    <div class="nav-inner">
-      <div class="nav-logo">
-        <span class="logo-icon">⊿</span>
-        <span class="logo-text">AniTrack</span>
-      </div>
-      <div class="nav-tag">M2L4 · Formularios</div>
-    </div>
-  </nav>
-
-  <!-- ── HERO ── -->
-  <header class="hero">
-    <div class="hero-inner">
-      <p class="hero-eyebrow">Tu lista personal</p>
-      <h1 class="hero-title">Registra tu <span class="accent">anime</span><br/>y lleva el control.</h1>
-      <p class="hero-sub">Agrega títulos, puntúalos y mira cómo crece tu colección.</p>
-    </div>
-    <div class="hero-deco" aria-hidden="true">
-      <div class="deco-circle deco-1"></div>
-      <div class="deco-circle deco-2"></div>
-      <div class="deco-circle deco-3"></div>
-    </div>
-  </header>
-
-  <!-- ── MAIN ── -->
-  <main class="layout">
-
-    <!-- COLUMNA IZQUIERDA: Formulario -->
-    <section class="panel panel--form">
-      <h2 class="panel-title">Agregar título</h2>
-
-      <form id="formAnime" novalidate>
-
-        <div class="field">
-          <label for="titulo">Título del anime</label>
-          <input type="text" id="titulo" placeholder="ej. Fullmetal Alchemist" autocomplete="off" />
+    <!-- ===== HEADER ===== -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="#" class="logo-link" aria-label="Ir al inicio de MercaYa">
+                <img src="static/images/logo.svg" alt="Logo de MercaYa" class="logo-img" />
+            </a>
+            <div class="header-tagline">Tu tienda favorita en Latinoamérica</div>
         </div>
+    </header>
 
-        <div class="field">
-          <label for="genero">Género</label>
-          <select id="genero">
-            <option value="">— Selecciona un género —</option>
-            <option value="Acción">Acción</option>
-            <option value="Aventura">Aventura</option>
-            <option value="Comedia">Comedia</option>
-            <option value="Drama">Drama</option>
-            <option value="Fantasía">Fantasía</option>
-            <option value="Misterio">Misterio</option>
-            <option value="Romance">Romance</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Slice of Life">Slice of Life</option>
-          </select>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- Hero Banner -->
+        <section class="hero-banner" aria-label="Bienvenida al registro">
+            <div class="hero-inner">
+                <div class="hero-badge">¡Nuevo!</div>
+                <h1 class="hero-title">Crea tu cuenta gratis</h1>
+                <p class="hero-subtitle">Millones de personas en toda Latinoamérica ya compran en MercaYa. ¡Hora de
+                    unirte!</p>
+                <div class="hero-perks">
+                    <span class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Envíos gratis
+                    </span>
+                    <span class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Pagos seguros
+                    </span>
+                    <span class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Devoluciones fáciles
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Container -->
+        <section class="form-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2 class="form-title">Información de tu cuenta</h2>
+                    <p class="form-subtitle">Completa todos los campos para finalizar tu registro</p>
+                </div>
+
+                <form id="formRegistro" class="register-form" novalidate>
+
+                    <!-- ROW 1: Nombre + Fecha -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputNombre">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                </span>
+                                Nombre completo
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="text" id="inputNombre" name="nombre" class="form-input"
+                                placeholder="Ej. Laura Martínez Gómez" autocomplete="name" aria-required="true"
+                                aria-describedby="error-nombre" />
+                            <p id="error-nombre" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inputFecha">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                </span>
+                                Fecha de nacimiento
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" id="inputFecha" name="fecha" class="form-input" aria-required="true"
+                                aria-describedby="error-fecha" />
+                            <p id="error-fecha" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- ROW 2: País + Ciudad -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputPais">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path
+                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                    </svg>
+                                </span>
+                                País
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <select id="inputPais" name="pais" class="form-input form-select" aria-required="true"
+                                aria-describedby="error-pais">
+                                <option value="">Selecciona tu país</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="México">México</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Chile">Chile</option>
+                                <option value="Perú">Perú</option>
+                                <option value="Ecuador">Ecuador</option>
+                                <option value="Venezuela">Venezuela</option>
+                                <option value="Brasil">Brasil</option>
+                            </select>
+                            <p id="error-pais" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inputCiudad">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="1" y="3" width="15" height="13" rx="1" />
+                                        <path d="M16 8h4l3 8H16V8z" />
+                                        <circle cx="5.5" cy="18.5" r="2.5" />
+                                        <circle cx="18.5" cy="18.5" r="2.5" />
+                                    </svg>
+                                </span>
+                                Ciudad
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="text" id="inputCiudad" name="ciudad" class="form-input"
+                                placeholder="Ej. Bogotá, Lima, Ciudad de México" autocomplete="address-level2"
+                                aria-required="true" aria-describedby="error-ciudad" />
+                            <p id="error-ciudad" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- ROW 3: Email + Teléfono -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputEmail">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg>
+                                </span>
+                                Correo electrónico
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="email" id="inputEmail" name="email" class="form-input"
+                                placeholder="tucorreo@ejemplo.com" autocomplete="email" aria-required="true"
+                                aria-describedby="error-email" />
+                            <p id="error-email" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inputTelefono">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                        <line x1="12" y1="18" x2="12.01" y2="18" />
+                                    </svg>
+                                </span>
+                                Teléfono celular
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="tel" id="inputTelefono" name="telefono" class="form-input"
+                                placeholder="3001234567" maxlength="10" autocomplete="tel" aria-required="true"
+                                aria-describedby="error-telefono" />
+                            <p id="error-telefono" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- ROW 4: Dirección (full width) -->
+                    <div class="form-row form-row--full">
+                        <div class="form-group">
+                            <label class="form-label" for="inputDireccion">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                </span>
+                                Dirección de residencia
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <input type="text" id="inputDireccion" name="direccion" class="form-input"
+                                placeholder="Calle 45 # 78-23, Apto 301" autocomplete="street-address"
+                                aria-required="true" aria-describedby="error-direccion" />
+                            <p id="error-direccion" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- ROW 5: Password + Confirm -->
+                    <div class="form-divider">
+                        <span>Seguridad de la cuenta</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputPassword">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </span>
+                                Contraseña
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="password" id="inputPassword" name="password" class="form-input"
+                                    placeholder="Mínimo 8 caracteres" autocomplete="new-password" aria-required="true"
+                                    aria-describedby="error-password" />
+                                <button type="button" class="toggle-password" data-target="inputPassword"
+                                    aria-label="Mostrar contraseña">
+                                    <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="display:none">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                        </path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="error-password" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inputConfirmPassword">
+                                <span class="label-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    </svg>
+                                </span>
+                                Confirmar contraseña
+                                <span class="label-required" aria-hidden="true">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="password" id="inputConfirmPassword" name="confirmPassword"
+                                    class="form-input" placeholder="Repite tu contraseña" autocomplete="new-password"
+                                    aria-required="true" aria-describedby="error-confirmPassword" />
+                                <button type="button" class="toggle-password" data-target="inputConfirmPassword"
+                                    aria-label="Mostrar confirmación">
+                                    <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="display:none">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                        </path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="error-confirmPassword" class="form-error" role="alert" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Submit -->
+                    <div class="form-footer">
+                        <p class="terms-text">Al registrarte aceptas nuestros <a href="#" class="terms-link">Términos y
+                                condiciones</a> y la <a href="#" class="terms-link">Política de privacidad</a>.</p>
+                        <button type="submit" class="btn-submit" id="btnRegistrar">
+                            <span class="btn-text">Crear mi cuenta</span>
+                            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                        <p class="login-link-text">¿Ya tienes cuenta? <a href="#" class="terms-link">Inicia sesión
+                                aquí</a></p>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- ===== SUCCESS CARD (hidden initially) ===== -->
+        <section id="resultadoRegistro" class="success-section" aria-live="polite" aria-label="Registro exitoso">
+            <div class="success-card">
+
+                <div class="success-header">
+                    <div class="success-check-wrapper">
+                        <div class="success-check-circle">
+                            <svg class="check-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="success-rings">
+                            <div class="ring ring-1"></div>
+                            <div class="ring ring-2"></div>
+                        </div>
+                    </div>
+                    <h2 class="success-title">¡Registro exitoso!</h2>
+                    <p class="success-subtitle">Tu cuenta en MercaYa ha sido creada correctamente. Ya puedes empezar a
+                        comprar.</p>
+                </div>
+
+                <div class="success-body">
+                    <h3 class="summary-title">Resumen de tu cuenta</h3>
+                    <div class="summary-grid" id="summaryGrid">
+                        <!-- JS inserts data rows here -->
+                    </div>
+                </div>
+
+                <div class="success-footer">
+                    <div class="confetti-strip" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                        ¡Bienvenido a la familia MercaYa!
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                    </div>
+                    <button class="btn-nuevo-registro" id="btnNuevoRegistro">
+                        Registrar otra cuenta
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p class="footer-brand">MercaYa &copy; 2025 — Todos los derechos reservados</p>
+            <p class="footer-exercise">Ejercicio académico · JavaScript Bootcamp · Módulo 2 Lección 4</p>
         </div>
+    </footer>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="episodios">Episodios vistos</label>
-            <input type="number" id="episodios" placeholder="ej. 24" min="1" />
-          </div>
-          <div class="field">
-            <label for="puntuacion">Puntuación (1–10)</label>
-            <input type="number" id="puntuacion" placeholder="ej. 9" min="1" max="10" />
-          </div>
-        </div>
-
-        <!-- Mensaje de error/éxito -->
-        <p id="mensajeForm" class="mensaje" aria-live="polite"></p>
-
-        <button type="submit" class="btn-primary">
-          <span>+ Agregar a mi lista</span>
-        </button>
-
-      </form>
-    </section>
-
-    <!-- COLUMNA DERECHA: Lista -->
-    <section class="panel panel--list">
-      <div class="list-header">
-        <h2 class="panel-title">Mi lista</h2>
-        <div class="stats-row">
-          <span class="stat-pill" id="statTotal">0 títulos</span>
-          <!-- BONUS: promedio aparece aquí -->
-          <span class="stat-pill stat-pill--accent" id="statPromedio" style="display:none"></span>
-        </div>
-      </div>
-
-      <!-- Estado vacío -->
-      <div id="estadoVacio" class="empty-state">
-        <p class="empty-icon">( ˘ ³˘)♥</p>
-        <p class="empty-text">Tu lista está vacía.<br/>Agrega tu primer anime para empezar.</p>
-      </div>
-
-      <!-- Contenedor de tarjetas -->
-      <div id="listaAnimes" class="anime-grid"></div>
-
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <p>AniTrack &mdash; M2L4 · JavaScript Bootcamp · 2026</p>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,20 @@
+<svg width="200" height="56" viewBox="0 0 200 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background pill -->
+  <rect width="200" height="56" rx="10" fill="white"/>
+
+  <!-- Cart icon box -->
+  <rect x="4" y="4" width="48" height="48" rx="10" fill="#1a4fa0"/>
+
+  <!-- Shopping cart icon (white) -->
+  <path d="M14 16 h4 l4 14 h14 l3-10 H19" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="24" cy="33" r="2" fill="white"/>
+  <circle cx="34" cy="33" r="2" fill="white"/>
+
+  <!-- Accent dot on cart -->
+  <circle cx="41" cy="18" r="5" fill="#f5a623"/>
+  <path d="M39 18 l1.5 1.5 L43 16.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- MercaYa text -->
+  <text x="62" y="37" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="24" fill="#1a4fa0">Merca</text>
+  <text x="140" y="37" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="24" fill="#f5a623">Ya</text>
+</svg>

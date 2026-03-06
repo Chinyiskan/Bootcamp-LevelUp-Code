@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form id="miFormulario">
+        <input type="text" id="nombre" placeholder="Tu nombre" />
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        // ✅ Ahora con preventDefault
+        document.getElementById("miFormulario").addEventListener("submit", function (evento) {
+            evento.preventDefault(); // 🛑 El formulario no va a ningún lado
+
+            console.log("Formulario interceptado. Ahora mando yo.");
+        });
+        // intenta colocar 5 espacio seguidos y enviar el formulario y mira lo que pasa
+    </script>
+</body>
+
+</html>
