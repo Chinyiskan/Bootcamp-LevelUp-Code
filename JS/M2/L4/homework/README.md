@@ -1,7 +1,6 @@
-```markdown
 # TripBudget — Proyecto Final Módulo 2 🌍
 
-> **M2 · Proyecto Final**
+> **M2 · Proyecto Final · 1 semana**
 
 ---
 
@@ -14,9 +13,6 @@ Esta mañana te llama aparte y te dice:
 > para que sus clientes planeen su presupuesto antes de reservar. Nada
 > demasiado complejo, pero tiene que verse y funcionar como un producto real.
 > He decidido asignártelo a ti. El cliente espera algo el viernes."*
-
-Al fin un reto de tu calibre. Sin plantilla. Sin código base.
-Solo tú, el editor y todo lo que has aprendido estos dos módulos.
 
 ---
 
@@ -63,13 +59,11 @@ para construir esto. No es coincidencia:
 ## 📦 Entregables
 
 ```
-
 trip-budget/
 ├── index.html
 ├── style.css
 ├── script.js
 └── README.md
-
 ```
 
 1. **Repositorio en GitHub** con estructura semántica.
@@ -81,13 +75,15 @@ trip-budget/
 ## ✅ Criterios
 
 **Interfaz:**
+
 - Diseño atractivo, coherente y con personalidad propia
 - Responsive — debe verse bien en móvil y desktop
 - Al menos una imagen o ilustración decorativa
-- Iconos y fuentes de Google Fonts o cualquier otra web
+- Iconos y fuentes de Google Fonts
 - Que se vea como algo que un cliente pagaría por usar
 
 **Código JavaScript:**
+
 - Toda la lógica de cálculo dentro de funciones con `return`
 - Las funciones solo usan lo que reciben por parámetros
 - Validación de todos los campos antes de procesar
@@ -98,7 +94,7 @@ trip-budget/
 
 ## 💬 Últimas palabras de tu Senior
 
-> *"No me entregues lo primero que funcione —
+> *"Este es tu primer proyecto propio. No me entregues lo primero que funcione —
 > entrégame lo mejor que puedas hacer."*
 
 > *"Antes de escribir código, escribe en papel qué funciones vas a necesitar
@@ -112,4 +108,3 @@ trip-budget/
 **Módulo:** 2 — Proyecto Final
 **Dificultad:** ⭐⭐⭐ Intermedio
 **Tiempo estimado:** 4 a 6 horas
-```
