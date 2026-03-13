@@ -21,7 +21,7 @@ function mostrarExito(mensaje) {
 }
 
 function crearTarjeta(anime) {
-    let imagenNombre = anime.genero.toLowerCase().replace("ó", "o").replace("í", "i") + ".png";
+    let imagenNombre = anime.genero.toLowerCase().replace("ó", "o").replace("í", "i").replace(/ /g, "-") + ".webp";
     return `
         <div class="anime-card">
             <img src="static/images/${imagenNombre}" alt="${anime.genero}" class="card-img" />
