@@ -113,6 +113,7 @@ function renderizarLista() {
 
 // Botón eliminar — pop() quita el último elemento del array
 document.getElementById("btnEliminar").addEventListener("click", function () {
+
     listaAnimes.pop();
 
     // Si el array quedó vacío volvemos a mostrar el estado vacío
