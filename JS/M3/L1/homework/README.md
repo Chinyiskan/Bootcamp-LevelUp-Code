@@ -79,40 +79,25 @@ quieras. Hazla tuya. Lo único que no puede cambiar es que funcione.
 ## 🔥 Extra Bonus — Para los que quieren ir más lejos
 
 Si terminaste todo lo anterior y tienes energía de sobra,
-aquí hay tres conceptos de arrays que no alcanzamos a ver
-en clase pero que te van a volar la cabeza:
+elige una o más de estas mejoras adicionales y agrégalas a tu v2.0.
+Todas se resuelven con herramientas que ya conoces:
 
-**filter()** — Crea un nuevo array con solo los elementos
-que cumplen una condición. Perfecto para el filtro por género,
-pero de una forma mucho más elegante que un `forEach` con `if`.
-```javascript
-// Ejemplo:
-let soloAccion = listaAnimes.filter(function(anime) {
-    return anime.genero === "Acción";
-});
-```
+**Límite de lista**
+Que no se puedan agregar más de 10 animes. Si el usuario intenta
+agregar un undécimo, muestra un mensaje de aviso y bloquea el envío.
+Pista: `listaAnimes.length` te dice cuántos hay en el array.
 
-**find()** — Recorre el array y retorna el primer elemento
-que cumple una condición. Útil para buscar un anime por título.
-```javascript
-// Ejemplo:
-let encontrado = listaAnimes.find(function(anime) {
-    return anime.titulo === "Naruto";
-});
-```
+**Buscador por título**
+Un input que filtre la lista en tiempo real mientras el usuario escribe.
+Solo deben aparecer los animes cuyo título contenga el texto ingresado.
+Pista: un `for` con un `if` y `.includes()` pueden resolver esto.
 
-**sort()** — Ordena los elementos de un array según el criterio
-que tú definas. Podrías ordenar tu lista de mayor a menor puntuación.
-```javascript
-// Ejemplo:
-listaAnimes.sort(function(a, b) {
-    return b.puntuacion - a.puntuacion;
-});
-```
+**Ordenar por puntuación**
+Un botón que ordene la lista de mayor a menor puntuación.
+Pista: un `for` anidado comparando puntuaciones elemento por elemento.
 
-Estos tres métodos son los que usan los devs profesionales en lugar
-de escribir `forEach` con lógica manual. Investígalos, pruébalos
-y si los implementas en tu v2.0 van a quedar muy bien en tu portafolio.
+> ⚠️ El programa funciona perfectamente sin este bonus.
+>  Elige el que más te llame y diviértete con él.
 
 ---
 
