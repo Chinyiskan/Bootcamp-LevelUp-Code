@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="inputAnime" placeholder="Nombre del anime" />
+    <button onclick="agregarAnime()">Agregar</button>
+    <ul id="listaAnimes">
+        
+    </ul>
+    <p id="contador"></p>
+
+    <script>
+        let animes = [];
+
+        function renderizar() {
+            let contenedor = document.getElementById("listaAnimes");
+            let contador = document.getElementById("contador");
+
+            contenedor.innerHTML = ""; // Limpiamos antes de redibujar
+
+            animes.forEach(function(anime) {
+                contenedor.innerHTML += "<li>" + anime + "</li>";
+            });
+
+            contador.textContent = "Total en tu lista: " + animes.length;
+        }
+
+        function agregarAnime() {
+            let input = document.getElementById("inputAnime");
+            let valor = input.value.trim();
+
+            if (valor === "") return;  // Guardián rápido — ¿lo recuerdan?
+
+            animes.push(valor);    // Entra al array
+            input.value = "";      // Limpiamos el campo
+            renderizar();          // Redibujamos con el array actualizado
+        }
+    </script>
+</body>
+</html>
