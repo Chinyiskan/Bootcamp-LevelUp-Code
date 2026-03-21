@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>🛒 Catálogo de productos</h2>
+    <div id="catalogo"></div>
+    <script>
+        let productos = [
+            { nombre: "Teclado Mecánico", precio: 185000, stock: 12 },
+            { nombre: "Mouse Gamer",      precio:  95000, stock: 8  },
+            { nombre: "Monitor 27\"",     precio: 750000, stock: 3  }
+        ];
+
+        function renderizar() {
+            let contenedor = document.getElementById("catalogo");
+            contenedor.innerHTML = "";
+
+            productos.forEach(function(producto) {
+                contenedor.innerHTML +=
+                "<p>" +
+                    "<strong>" + producto.nombre + "</strong> — " +
+                    "$" + producto.precio +
+                    " | Stock: " + producto.stock +
+                "</p>";
+            });
+        }
+
+        renderizar();
+
+        // 👆 Pausar aquí y conectar con la semana pasada:
+        // "La semana pasada forEach recorría strings simples.
+        // Ahora cada elemento es un objeto completo con sus propiedades.
+        // El forEach no cambió — cambiaron los datos que vive adentro."
+        // Preguntarles: ¿cómo accederían solo al precio del segundo producto?
+        // Que lo intenten antes de mostrarlo: productos[1].precio
+    </script>
+</body>
+</html>

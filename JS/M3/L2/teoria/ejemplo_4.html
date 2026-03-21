@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>📦 Registro de productos</h2>
+    <input type="text"   id="inputNombre" placeholder="Nombre del producto" />
+    <input type="number" id="inputPrecio" placeholder="Precio" />
+    <input type="number" id="inputStock"  placeholder="Stock disponible" />
+    <button onclick="agregarProducto()">Agregar producto</button>
+    <div id="catalogo"></div>
+    <p id="contador"></p>
+
+    <script>
+        let productos = [];
+
+        function renderizar() {
+            let contenedor = document.getElementById("catalogo");
+            let contador   = document.getElementById("contador");
+            contenedor.innerHTML = "";
+
+            productos.forEach(function(producto) {
+                contenedor.innerHTML +=
+                "<p>" +
+                    "<strong>" + producto.nombre + "</strong> — " +
+                    "$" + producto.precio +
+                    " | Stock: " + producto.stock +
+                "</p>";
+            });
+
+            contador.textContent = "Total de productos: " + productos.length;
+        }
+
+        function agregarProducto() {
+            let nombre = document.getElementById("inputNombre").value.trim();
+            let precio = Number(document.getElementById("inputPrecio").value);
+            let stock  = Number(document.getElementById("inputStock").value);
+
+            // Guardianes — ¿los recuerdan de M2L4?
+            if (nombre === "") return;
+            if (precio <= 0)   return;
+            if (stock < 0)     return;
+
+            // Construimos el objeto con los datos del formulario
+            let nuevoProducto = {
+                nombre: nombre,
+                precio: precio,
+                stock:  stock
+            };
+
+            productos.push(nuevoProducto); // Entra al array como objeto completo
+            renderizar();                  // Redibujamos
+
+            // Limpiamos los campos
+            document.getElementById("inputNombre").value = "";
+            document.getElementById("inputPrecio").value = "";
+            document.getElementById("inputStock").value  = "";
+            }
+
+        // 👆 Este bloque conecta TODO lo visto hasta ahora:
+        // — Objetos con propiedades (M3L1 hoy)
+        // — push a un array (M3L0 semana pasada)
+        // — forEach para renderizar (M3L0 semana pasada)
+        // — Guardianes con trim y return (M2L4)
+        // — El array empieza vacío y crece con cada submit
+        // Agregar 3 productos en vivo y que vean la lista construirse sola.
+    </script>
+</body>
+</html>
