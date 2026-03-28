@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo Anime</title>
+</head>
+<body>
+    <h2>🎌 Catálogo de Anime</h2>
+    <button onclick="mostrarTodos()">Todos</button>
+    <button onclick="mostrarPorGenero('Acción')">Solo Acción</button>
+    <button onclick="mostrarPorGenero('Romance')">Solo Romance</button>
+    <div id="catalogo"></div>
+
+    <script>
+        let catalogo = [
+            { titulo: "Attack on Titan",   genero: "Acción",  rating: 9.1 },
+            { titulo: "Your Name",         genero: "Romance", rating: 9.0 },
+            { titulo: "Demon Slayer",      genero: "Acción",  rating: 8.7 },
+            { titulo: "Violet Evergarden", genero: "Drama",   rating: 8.9 },
+            { titulo: "Jujutsu Kaisen",    genero: "Acción",  rating: 8.6 }
+        ];
+
+        // renderizar siempre recibe el array que quiero mostrar
+        // no importa si es el completo o uno filtrado — ella solo dibuja
+        function renderizar(lista) {
+            let contenedor = document.getElementById("catalogo");
+            contenedor.innerHTML = "";
+
+            lista.forEach(function(anime) {
+                contenedor.innerHTML +=
+                    "<p><strong>" + anime.titulo + "</strong> — " +
+                    anime.genero + " | ⭐ " + anime.rating + "</p>";
+            });
+        }
+
+        function mostrarTodos() {
+            renderizar(catalogo); // le paso el array completo
+        }
+
+        function mostrarPorGenero(genero) {
+            let resultado = catalogo.filter(function(anime) {
+                return anime.genero === genero;
+            });
+            renderizar(resultado); // le paso solo los filtrados
+        }
+
+        // Arranca mostrando todo
+        mostrarTodos();
+
+        // 👆 Este es el patrón real de cualquier app con filtros:
+        // renderizar no sabe ni le importa de dónde viene la lista.
+        // Tú decides qué mandarle — el array completo o uno filtrado.
+        // Preguntarles: ¿cómo harían un botón que muestre solo los de rating >= 9.0?
+        // Que lo construyan en vivo antes de pasar al siguiente ejemplo.
+    </script>
+</body>
+</html>

@@ -1,0 +1,1133 @@
+/* ══════════════════════════════════════════════════════════
+   GameVault — Tu Tienda de Videojuegos  |  style.css
+   ══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── ANIMACIONES ──────────────────────────────────────── */
+
+/* Pulso de borde ámbar para urgencia comercial */
+@keyframes urgencyPulse {
+    0%, 100% {
+        border-color: rgba(251, 191, 36, 0.35);
+        box-shadow: none;
+    }
+    50% {
+        border-color: rgba(251, 191, 36, 0.85);
+        box-shadow: 0 0 14px rgba(251, 191, 36, 0.25);
+    }
+}
+
+/* Llama del badge ¡Últimas! */
+@keyframes flamePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.75; transform: scale(1.08); }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0d0d14;
+    --surface: #16161f;
+    --surface2: #1e1e2e;
+    --accent: #7c6af0;
+    --accent-dim: rgba(124, 106, 240, 0.15);
+    --text: #e2e2f0;
+    --muted: #7878a0;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --border: #2a2a3e;
+    --r: 12px;
+    --header-h: 0px; /* se calcula en JS o se estima */
+}
+
+/* ── LAYOUT GLOBAL ────────────────────────────────────── */
+
+html, body {
+    height: 100%;
+    overflow: hidden; /* sin scroll en el body */
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── HEADER STICKY — ocupa su altura natural ──────────── */
+
+.header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+/* Fila 1: logo + alerta */
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: var(--surface2);
+    padding: 4px;
+}
+
+.header-titulo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+
+.header-sub {
+    font-size: 0.74rem;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+/* Acciones de usuario mock */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+/* Botón carrito con badge */
+.btn-carrito {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: border-color 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.btn-carrito:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.carrito-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* Botón ghost (iniciar sesión) */
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: inherit;
+}
+
+.btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+/* Botón accent pequeño (registrarse) */
+.btn-accent-sm {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s, transform 0.1s;
+    font-family: inherit;
+}
+
+.btn-accent-sm:hover {
+    opacity: 0.85;
+}
+
+.btn-accent-sm:active,
+.btn-ghost:active,
+.btn-carrito:active {
+    transform: scale(0.96);
+}
+
+.alerta-stock {
+    padding: 7px 14px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 8px;
+    color: var(--warn);
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    animation: urgencyPulse 2.2s ease-in-out infinite;
+}
+
+/* Fila 2: controles — en el borde inferior del header con divisor */
+.header-controles {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    padding: 12px 0;
+}
+
+.control-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control-grupo label {
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Toggle switch en vez de checkbox feo */
+.control-toggle {
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.toggle-label {
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+}
+
+/* Wrapper clickable */
+.toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Esconde el checkbox nativo */
+.toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Pista del toggle */
+.toggle-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: background 0.25s, border-color 0.25s;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+}
+
+/* Pulgar */
+.toggle-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+    flex-shrink: 0;
+}
+
+/* Estado: activo */
+.toggle-switch input:checked + .toggle-track {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.toggle-switch input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(20px);
+    background: #fff;
+}
+
+select,
+input[type="text"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    height: 36px;
+}
+
+select:focus,
+input[type="text"]:focus {
+    border-color: var(--accent);
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.busqueda-row {
+    display: flex;
+    gap: 6px;
+}
+
+.control-busqueda input {
+    min-width: 180px;
+}
+
+button {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#btnBuscar {
+    background: var(--accent);
+    color: #fff;
+}
+
+#btnBuscar:hover {
+    opacity: 0.85;
+}
+
+.btn-secundario {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+.btn-secundario:hover {
+    color: var(--text);
+}
+
+/* ── MAIN — scrollea solo esta parte ─────────────────── */
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px 28px;
+    /* scrollbar personalizada */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--surface);
+}
+
+.main::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+.main::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+/* ── PANEL DE DETALLE ─────────────────────────────────── */
+
+.panel-detalle {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: var(--r);
+    padding: 18px 22px;
+    margin-bottom: 16px;
+}
+
+.detalle-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.detalle-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 11px 14px;
+}
+
+.d-label {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.d-valor {
+    font-size: 0.93rem;
+    font-weight: 700;
+}
+
+/* ── BANNER DESTACADO ─────────────────────────────────── */
+
+.banner-destacado {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: var(--r);
+    padding: 11px 18px;
+    margin-bottom: 14px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── STATS ────────────────────────────────────────────── */
+
+.stats-bar {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ── GRID DE TARJETAS — 3 columnas ───────────────────── */
+
+.grid-juegos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* ── TARJETA ──────────────────────────────────────────── */
+
+.juego-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+    display: flex;
+    flex-direction: column;
+}
+
+.juego-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 32px rgba(124, 106, 240, 0.2);
+}
+
+.juego-card.sin-stock {
+    opacity: 0.45;
+}
+
+/* Imagen */
+.card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface2);
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.juego-card:hover .card-img {
+    transform: scale(1.06);
+}
+
+/* Badge de stock sobre la imagen */
+.card-stock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 4px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stock-ok {
+    background: rgba(74, 222, 128, 0.18);
+    color: var(--ok);
+    border: 1px solid rgba(74, 222, 128, 0.35);
+}
+
+.stock-bajo {
+    background: rgba(251, 191, 36, 0.18);
+    color: var(--warn);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    animation: flamePulse 1.8s ease-in-out infinite;
+}
+
+.stock-cero {
+    background: rgba(248, 113, 113, 0.18);
+    color: var(--danger);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+/* Cuerpo de tarjeta */
+.card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-genero {
+    font-size: 0.63rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.card-titulo {
+    font-size: 0.97rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 3px;
+}
+
+.card-plataforma {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 9px;
+    margin-top: auto;
+}
+
+.card-precio {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--ok);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-rating {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--warn);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ── ESTADO VACÍO ─────────────────────────────────────── */
+
+.estado-vacio {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--muted);
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.estado-vacio i {
+    font-size: 2.5rem;
+    opacity: 0.4;
+}
+
+/* ── INPUT NÚMERO (precio máximo) ─────────────────────── */
+
+input[type="number"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    height: 36px;
+    width: 110px;
+}
+
+input[type="number"]:focus {
+    border-color: var(--accent);
+}
+
+/* Quitar flechitas del input number en Chrome/Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* ── 🎫 TICKET C — SECCIÓN TOP 3 ─────────────────────── */
+
+.top3-seccion {
+    background: linear-gradient(135deg, rgba(124, 106, 240, 0.08), rgba(124, 106, 240, 0.02));
+    border: 1px solid rgba(124, 106, 240, 0.3);
+    border-radius: var(--r);
+    padding: 18px 22px;
+    margin-bottom: 18px;
+}
+
+.top3-titulo {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Fila de las 3 tarjetas del podio */
+.top3-grid {
+    display: flex;
+    gap: 14px;
+}
+
+.top3-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.top3-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+}
+
+.top3-medalla {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 900;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Oro */
+.medalla-1 {
+    background: rgba(251, 191, 36, 0.18);
+    border: 2px solid #fbbf24;
+    color: #fbbf24;
+}
+
+/* Plata */
+.medalla-2 {
+    background: rgba(148, 163, 184, 0.18);
+    border: 2px solid #94a3b8;
+    color: #94a3b8;
+}
+
+/* Bronce */
+.medalla-3 {
+    background: rgba(180, 120, 60, 0.18);
+    border: 2px solid #b4783c;
+    color: #b4783c;
+}
+
+.top3-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 7px;
+}
+
+.top3-nombre {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.top3-rating {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--warn);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── 🔥 EXTRA BONUS — COMPARADOR ─────────────────────── */
+
+.comparador-seccion {
+    margin-top: 32px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+}
+
+.comparador-titulo {
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--warn);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.comparador-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
+
+/* Fila de inputs + botón */
+.comparador-controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.comparador-controles input {
+    flex: 1;
+    min-width: 160px;
+}
+
+.comparador-vs {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--warn);
+    letter-spacing: 0.1em;
+    padding: 0 4px;
+}
+
+#btnComparar {
+    background: var(--warn);
+    color: #0d0d14;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+#btnComparar:hover {
+    opacity: 0.88;
+}
+
+/* Cierra el resultado */
+.comparador-cerrar {
+    margin-bottom: 14px;
+}
+
+/* Wrapper de las dos columnas */
+.comparador-cards {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+/* Cada columna de stats */
+.comp-columna {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comp-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.comp-titulo {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.comp-genero {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: -6px;
+}
+
+/* Fila de cada stat (rating / precio / stock) */
+.comp-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    transition: border-color 0.2s;
+}
+
+/* Cuando este juego gana en esa categoría */
+.comp-stat.ganador {
+    border-color: var(--ok);
+    background: rgba(74, 222, 128, 0.07);
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.1);
+}
+
+.comp-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.comp-valor {
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+.comp-stat.ganador .comp-valor {
+    color: var(--ok);
+}
+
+.comp-corona {
+    font-size: 0.78rem;
+    color: var(--ok);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Separador central VS */
+.comp-separador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--warn);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+}
+
+/* ── UTILIDAD ─────────────────────────────────────────── */
+
+.oculto {
+    display: none !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (max 768px)
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+    /* Header: dejamos que el contenido se apile */
+    .header {
+        padding: 12px 16px 0;
+    }
+
+    .header-top {
+        gap: 10px;
+    }
+
+    /* Acciones del header se ocultan — no son funcionales en demo */
+    .header-actions {
+        display: none;
+    }
+
+    /* Controles en fila con wrap */
+    .header-controles {
+        gap: 10px;
+        padding: 10px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: wrap;
+    }
+
+    .control-grupo {
+        min-width: 120px;
+    }
+
+    /* Grid de 2 columnas en tablet */
+    .grid-juegos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    /* Top 3: fila que hace scroll horizontal en tablet */
+    .top3-grid {
+        gap: 10px;
+    }
+
+    /* Comparador: columnas apiladas en tablet */
+    .comparador-cards {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .comp-separador {
+        padding: 8px 0;
+        font-size: 1rem;
+    }
+
+    .main {
+        padding: 14px 16px 24px;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — Móvil (max 480px)
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+    /* Grid de 1 columna en móvil */
+    .grid-juegos {
+        grid-template-columns: 1fr;
+    }
+
+    /* Top 3: se apila en columna */
+    .top3-grid {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .top3-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .top3-img {
+        width: 80px;
+        aspect-ratio: 1 / 1;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+
+    .top3-nombre {
+        text-align: left;
+        font-size: 0.88rem;
+    }
+
+    .top3-rating {
+        justify-content: flex-start;
+    }
+
+    /* Header branding compacto */
+    .header-logo-img {
+        width: 34px;
+        height: 34px;
+    }
+
+    .header-titulo {
+        font-size: 1.1rem;
+    }
+
+    .header-sub {
+        display: none;
+    }
+
+    /* Controles en móvil: cada uno ocupa su ancho mínimo */
+    .header-controles {
+        flex-wrap: wrap;
+    }
+
+    .control-busqueda {
+        width: 100%;
+    }
+
+    .control-busqueda input {
+        min-width: unset;
+        flex: 1;
+    }
+
+    /* Busqueda row a ancho completo */
+    .busqueda-row {
+        width: 100%;
+    }
+
+    /* Input precio máx más estrecho */
+    input[type="number"] {
+        width: 90px;
+    }
+
+    /* Comparador inputs en columna */
+    .comparador-controles {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .comparador-controles input {
+        width: 100%;
+    }
+
+    .comparador-vs {
+        text-align: center;
+    }
+
+    #btnComparar {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Detalle grid de 2 columnas en móvil */
+    .detalle-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Panel detalle con más espacio */
+    .panel-detalle {
+        padding: 14px;
+    }
+
+    /* Alerta stock */
+    .alerta-stock {
+        font-size: 0.72rem;
+        padding: 6px 10px;
+    }
+}
