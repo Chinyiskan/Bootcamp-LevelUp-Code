@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscador de Anime</title>
+</head>
+<body>
+    <h2>🔍 Buscador de Anime</h2>
+    <input type="text" id="inputBusqueda" placeholder="Escribe un título..." />
+    <button onclick="buscar()">Buscar</button>
+    <p id="mensajeGuardia"></p>
+    <div id="resultado"></div>
+
+    <script>
+        let catalogo = [
+            { titulo: "Attack on Titan",   genero: "Acción",  rating: 9.1 },
+            { titulo: "Your Name",         genero: "Romance", rating: 9.0 },
+            { titulo: "Demon Slayer",      genero: "Acción",  rating: 8.7 },
+            { titulo: "Violet Evergarden", genero: "Drama",   rating: 8.9 },
+            { titulo: "Jujutsu Kaisen",    genero: "Acción",  rating: 8.6 }
+        ];
+
+        function buscar() {
+            let termino = document.getElementById("inputBusqueda").value.trim();
+            let mensaje = document.getElementById("mensajeGuardia");
+            let contenedor = document.getElementById("resultado");
+
+            // Guardián — igual que en M2L4
+            if (termino === "") {
+                mensaje.textContent = "⚠️ Escribe algo para buscar.";
+                return;
+            }
+
+            mensaje.textContent = "";
+            contenedor.innerHTML = "";
+
+            // some verifica si vale la pena buscar antes de intentar
+            let existeAlguno = catalogo.some(function(anime) {
+                return anime.titulo === termino;
+            });
+
+            if (!existeAlguno) {
+                contenedor.innerHTML = "<p>❌ No encontramos ese título en el catálogo.</p>";
+                return;
+            }
+
+            // find recupera el objeto exacto
+            let encontrado = catalogo.find(function(anime) {
+                return anime.titulo === termino;
+            });
+
+            // filter busca compañeros del mismo género
+            let mismoGenero = catalogo.filter(function(anime) {
+                return anime.genero === encontrado.genero && anime.titulo !== encontrado.titulo;
+            });
+
+            contenedor.innerHTML =
+                "<p>✅ <strong>" + encontrado.titulo + "</strong> — " +
+                encontrado.genero + " | ⭐ " + encontrado.rating + "</p>" +
+                "<p>También te puede gustar (" + encontrado.genero + "):</p>";
+
+            mismoGenero.forEach(function(anime) {
+                contenedor.innerHTML += "<p>→ " + anime.titulo + " ⭐ " + anime.rating + "</p>";
+            });
+        }
+
+        // 👆 Este ejemplo conecta el trío completo en un flujo real:
+        // some actúa como portero — si no existe nada, cortamos antes de gastar recursos.
+        // find recupera el objeto exacto una vez confirmado que existe.
+        // filter genera las recomendaciones del mismo género.
+        // Probar en vivo: "Your Name" (encuentra + recomienda), "Dragon Ball" (no existe).
+        // Preguntarles: ¿qué pasaría si borramos el bloque de some y vamos directo al find?
+        // Que lo intenten — el programa no explota, pero encontrado sería undefined
+        // y al leer encontrado.genero se rompe. Ahí el some gana su lugar.
+    </script>
+</body>
+</html>
