@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Biblioteca — Arsenal Completo</title>
+</head>
+<body>
+    <h2>📚 Arsenal Completo</h2>
+
+    <button onclick="mostrarTodos()">Todos</button>
+    <button onclick="mostrarNovelas()">Solo Novelas</button>
+    <button onclick="mostrarOrdenados()">Más caros primero</button>
+
+    <p id="statValor"></p>
+    <div id="lista"></div>
+
+    <script>
+        let biblioteca = [
+            { titulo: "Cien años de soledad", genero: "Novela",        precio: 45.00, stock: 3 },
+            { titulo: "El principito",        genero: "Infantil",      precio: 22.00, stock: 8 },
+            { titulo: "1984",                 genero: "Ciencia ficción", precio: 38.00, stock: 2 },
+            { titulo: "Sapiens",              genero: "No ficción",    precio: 52.00, stock: 5 },
+            { titulo: "El alquimista",        genero: "Novela",        precio: 29.00, stock: 1 }
+        ];
+
+        // renderizar no sabe ni le importa de dónde viene la lista
+        // solo dibuja lo que recibe y calcula el valor de lo visible
+        function renderizar(lista) {
+            let contenedor = document.getElementById("lista");
+            let stat       = document.getElementById("statValor");
+
+            contenedor.innerHTML = "";
+
+            lista.forEach(function(libro) {
+                contenedor.innerHTML +=
+                    "<p><strong>" + libro.titulo + "</strong> — " +
+                    libro.genero + " | $" + libro.precio.toFixed(2) +
+                    " | stock: " + libro.stock + "</p>";
+            });
+
+            // reduce calcula el valor total del inventario visible en pantalla
+            let total = lista.reduce(function(acumulador, libro) {
+                return acumulador + (libro.precio * libro.stock);
+            }, 0);
+
+            stat.textContent = "Valor del inventario visible: $" + total.toFixed(2);
+        }
+
+        function mostrarTodos() {
+            renderizar(biblioteca);
+        }
+
+        function mostrarNovelas() {
+            // filter primero, renderizar recibe solo el resultado
+            let novelas = biblioteca.filter(function(libro) {
+                return libro.genero === "Novela";
+            });
+            renderizar(novelas);
+        }
+
+        function mostrarOrdenados() {
+            // slice para no tocar el original, sort para ordenar
+            let ordenado = biblioteca.slice().sort(function(a, b) {
+                return b.precio - a.precio;
+            });
+            renderizar(ordenado);
+        }
+
+        mostrarTodos();
+
+        // 👆 Este ejemplo muestra el patrón completo en acción:
+        // · filter reduce la lista antes de renderizar
+        // · sort la reordena sin tocar el original gracias a slice
+        // · reduce calcula sobre lo que hay visible en pantalla en ese momento
+        // Preguntarles: ¿qué valor muestra el stat cuando filtras solo Novelas?
+        // Que lo comprueben: (45×3) + (29×1) = 135 + 29 = $164.00
+        // Luego preguntarles: ¿cómo harían que el stat muestre el precio promedio?
+        // Que lo intenten: total de precios / lista.length
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameVault — Tu Tienda de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ══ HEADER STICKY ══ -->
+    <header class="header">
+
+        <!-- Fila 1: Branding + Nav actions -->
+        <div class="header-top">
+
+            <!-- Logo + nombre -->
+            <div class="header-brand">
+                <img src="images/logo.png" alt="GameVault Logo" class="header-logo-img" />
+                <div>
+                    <h1 class="header-titulo">GameVault</h1>
+                    <p class="header-sub">Los mejores títulos al mejor precio</p>
+                </div>
+            </div>
+
+            <!-- Alerta stock crítico (JS la muestra/oculta) -->
+            <div id="alertaStock" class="alerta-stock oculto">
+                <i class="fa-solid fa-fire"></i>
+                ¡Últimas unidades! Algunos títulos están a punto de agotarse
+            </div>
+
+            <!-- Acciones de usuario (mock) -->
+            <div class="header-actions">
+                <button class="btn-carrito" title="Carrito de compras" aria-label="Carrito">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="carrito-badge">0</span>
+                </button>
+                <button class="btn-ghost">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Iniciar sesión
+                </button>
+                <button class="btn-accent-sm">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Registrarse
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Fila 2: Filtros -->
+        <div class="header-controles">
+
+            <div class="control-grupo">
+                <label for="selectGenero">
+                    <i class="fa-solid fa-gamepad"></i> Género
+                </label>
+                <select id="selectGenero">
+                    <option value="">Todos</option>
+                    <option value="RPG">RPG</option>
+                    <option value="FPS">FPS</option>
+                    <option value="Aventura">Aventura</option>
+                    <option value="Deportes">Deportes</option>
+                    <option value="Pelea">Pelea</option>
+                    <option value="Indie">Indie</option>
+                    <option value="Estrategia">Estrategia</option>
+                    <option value="Simulacion">Simulación</option>
+                </select>
+            </div>
+
+            <!-- Toggle switch estético -->
+            <div class="control-grupo control-toggle">
+                <label class="toggle-label">
+                    <i class="fa-solid fa-circle-check"></i> Solo disponibles
+                </label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="checkDisponible" />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="control-grupo control-busqueda">
+                <label for="inputBuscar">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar título
+                </label>
+                <div class="busqueda-row">
+                    <input type="text" id="inputBuscar" placeholder="Ej: Elden Ring" />
+                    <button id="btnBuscar">
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </button>
+                </div>
+            </div>
+
+            <!-- 🎫 TICKET A — Filtro por plataforma -->
+            <div class="control-grupo">
+                <label for="selectPlataforma">
+                    <i class="fa-solid fa-desktop"></i> Plataforma
+                </label>
+                <select id="selectPlataforma">
+                    <option value="">Todos</option>
+                    <option value="PC">PC</option>
+                    <option value="PS5">PS5</option>
+                </select>
+            </div>
+
+            <!-- 🎫 TICKET B — Filtro por precio máximo -->
+            <div class="control-grupo">
+                <label for="inputPrecioMax">
+                    <i class="fa-solid fa-tag"></i> Precio máx.
+                </label>
+                <input type="number" id="inputPrecioMax" placeholder="Ej: 30" min="0" />
+            </div>
+
+            <button id="btnLimpiar" class="btn-secundario">
+                <i class="fa-solid fa-rotate-left"></i> Limpiar
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- ══ CONTENIDO PRINCIPAL ══ -->
+    <main class="main">
+
+        <!-- Panel de detalle (find) -->
+        <section id="panelDetalle" class="panel-detalle oculto">
+            <p class="detalle-label">
+                <i class="fa-solid fa-file-lines"></i> Ficha del juego encontrado
+            </p>
+            <div id="contenidoDetalle" class="detalle-body"></div>
+            <button id="btnCerrarDetalle" class="btn-secundario">
+                <i class="fa-solid fa-xmark"></i> Cerrar ficha
+            </button>
+        </section>
+
+        <!-- Banner top (bonus) -->
+        <div id="bannerDestacado" class="banner-destacado oculto"></div>
+
+        <!-- 🎫 TICKET C — Sección Top 3 del filtro -->
+        <section id="seccionTop3" class="top3-seccion oculto">
+            <h2 class="top3-titulo">
+                <i class="fa-solid fa-ranking-star"></i> Top 3 del filtro actual
+            </h2>
+            <div id="top3Grid" class="top3-grid"></div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <i class="fa-solid fa-layer-group"></i>
+            <span id="statTotal"></span>
+            <span class="stats-separador">&nbsp;·&nbsp;</span>
+            <i class="fa-solid fa-sack-dollar"></i>
+            <span id="statValor"></span>
+        </div>
+
+        <!-- Grid 3 columnas -->
+        <div id="gridJuegos" class="grid-juegos"></div>
+
+        <!-- Estado vacío -->
+        <div id="estadoVacio" class="estado-vacio oculto">
+            <i class="fa-solid fa-face-meh"></i>
+            <p>Ningún juego coincide con los filtros actuales.</p>
+        </div>
+
+        <!-- 🔥 EXTRA BONUS — Comparador de juegos -->
+        <section class="comparador-seccion">
+            <h2 class="comparador-titulo">
+                <i class="fa-solid fa-code-compare"></i> Comparador de juegos
+            </h2>
+            <p class="comparador-desc">Escribe dos títulos exactos y compara sus stats lado a lado.</p>
+
+            <div class="comparador-controles">
+                <input type="text" id="inputJuego1" placeholder="Ej: Elden Ring" />
+                <span class="comparador-vs">VS</span>
+                <input type="text" id="inputJuego2" placeholder="Ej: Hades" />
+                <button id="btnComparar">
+                    <i class="fa-solid fa-bolt"></i> Comparar
+                </button>
+            </div>
+
+            <!-- Resultado de la comparación (JS lo llena y muestra) -->
+            <div id="resultadoComparador" class="comparador-resultado oculto">
+                <button id="btnCerrarComparador" class="btn-secundario comparador-cerrar">
+                    <i class="fa-solid fa-xmark"></i> Cerrar comparación
+                </button>
+                <div id="comparadorCards" class="comparador-cards"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
