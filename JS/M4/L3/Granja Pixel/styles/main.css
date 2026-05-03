@@ -769,7 +769,15 @@ body {
   text-shadow: 1px 1px 0 #000;
 }
 
-/* ── Sprite libre de animal ──────────────────────────────────── */
+/* Wrapper que recibe el scaleX del flip — solo afecta a la imagen, NO a las stats */
+.animal-flip-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease;
+}
+
+/* Sprite libre de animal */
 .animal-sprite {
   position: absolute;
   display: flex;

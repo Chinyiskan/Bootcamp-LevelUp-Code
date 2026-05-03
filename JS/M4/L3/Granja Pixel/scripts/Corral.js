@@ -11,12 +11,43 @@ import { estadoJuego } from './Juego.js';
 import { crearAnimal, CATALOGO_ANIMALES_VISUAL } from './Animales.js';
 
 // ──────────────────────────────────────────────────────────────
+// SFX DE ANIMALES (precargados para evitar latencia)
+// ──────────────────────────────────────────────────────────────
+const sfxAnimales = {
+  Pollo: new Audio('sounds/SFX/chicken_cluck.wav'),
+  Vaca:  new Audio('sounds/SFX/cow_moo2.wav'),
+};
+Object.values(sfxAnimales).forEach(a => { a.volume = 0.75; });
+
+/**
+ * sonarAnimal()
+ * Reproduce el SFX correspondiente al tipo de animal.
+ * Se llama desde onclick del sprite y desde alimentarAnimal().
+ * @param {number} indice - Posición del animal en el array
+ */
+window.sonarAnimal = function (indice) {
+  const animal = corralEstado.animales[indice];
+  if (!animal) return;
+  const sfx = sfxAnimales[animal.nombre];
+  if (!sfx) return;
+  const clon = sfx.cloneNode(); // clonar para poder solapar sonidos
+  clon.volume = 0.75;
+  clon.play().catch(() => {});  // catch silencia el error si el contexto no está activo aún
+};
+
+// ──────────────────────────────────────────────────────────────
 // CONFIGURACIÓN DEL CORRAL
 // ──────────────────────────────────────────────────────────────
 
 const COSTO_DESBLOQUEO_CORRAL = 250;
 const MAX_ANIMALES            = 4;
 const CICLO_PRODUCCION        = 25; // segundos entre cada ronda de monedas
+
+// Tamaño del sprite en px para cada especie (la vaca es más grande que el pollo)
+const TAMAÑOS_SPRITE = {
+  Pollo: 48,
+  Vaca:  72,
+};
 
 // ──────────────────────────────────────────────────────────────
 // ESTADO INTERNO DEL CORRAL
@@ -78,15 +109,22 @@ window.comprarAnimal = function (tipo) {
     corralEstado.animales.push(nuevoAnimal);
 
     // Inicializar posición y movimiento aleatorio para el nuevo animal
-    const pasto = document.getElementById('corral-pasto');
-    const anchoMax = pasto ? pasto.clientWidth - 64 : 400;
+    // Leer dimensiones reales del pasto para posicionar correctamente
+    const pastoDom  = document.getElementById('corral-pasto');
+    const anchoDisp = pastoDom ? Math.max(10, pastoDom.clientWidth  - 80) : 400;
+    const altoDisp  = pastoDom ? Math.max(10, pastoDom.clientHeight - 90) : 60;
+
     corralEstado._posiciones.push({
-      x: Math.random() * anchoMax,
-      y: Math.random() * 40, // variación vertical ligera dentro del pasto
+      x: Math.random() * anchoDisp,
+      y: Math.random() * altoDisp,
     });
     corralEstado._movimientos.push({
-      vx: (Math.random() * 30 + 15) * (Math.random() < 0.5 ? 1 : -1),
-      flipX: false,
+      vx: 0,
+      vy: 0,
+      flipX:        false,
+      targetX:      Math.random() * anchoDisp,
+      targetY:      Math.random() * altoDisp,
+      timerDestino: 0,  // elegir destino en el primer tick
     });
 
     actualizarOroEnHUD();
@@ -107,6 +145,7 @@ window.alimentarAnimal = function (indice) {
   let animal = corralEstado.animales[indice];
   if (!animal) return;
   animal.alimentar();                   // recarga hambre a 100
+  window.sonarAnimal(indice);           // reproducir SFX del animal
   actualizarEstadisticas();             // actualiza solo las stats, sin destruir sprites
   mostrarToastCorral('🌽 ¡' + animal.nombre + ' alimentado!');
 };
@@ -193,33 +232,66 @@ function ejecutarCicloProduccion() {
 function moverAnimales(delta) {
   const pasto = document.getElementById('corral-pasto');
   if (!pasto) return;
-  const anchoMax = pasto.clientWidth - 64;
-  const altoMax  = pasto.clientHeight - 72; // margen para las stats flotantes
+
+  // Márgenes de movimiento dentro del pasto
+  const anchoMax = Math.max(10, pasto.clientWidth  - 80);
+  const altoMax  = Math.max(10, pasto.clientHeight - 90); // dejar margen para stats
+
+  // Velocidad máxima de cada especie (px/s)
+  const SPEED = { Pollo: 55, Vaca: 35 };
 
   corralEstado.animales.forEach(function (animal, i) {
     if (!corralEstado._posiciones[i] || !corralEstado._movimientos[i]) return;
 
-    let pos = corralEstado._posiciones[i];
-    let mov = corralEstado._movimientos[i];
+    const pos = corralEstado._posiciones[i];
+    const mov = corralEstado._movimientos[i];
+    const speed = SPEED[animal.nombre] || 45;
 
-    // Mover
-    pos.x += mov.vx * delta;
-
-    // Rebotar en los bordes horizontales
-    if (pos.x < 0) {
-      pos.x = 0;
-      mov.vx = Math.abs(mov.vx);
-    } else if (pos.x > anchoMax) {
-      pos.x = anchoMax;
-      mov.vx = -Math.abs(mov.vx);
+    // ── Elegir nuevo destino cuando el timer llega a cero ──────────
+    mov.timerDestino -= delta;
+    if (mov.timerDestino <= 0) {
+      // Nuevo objetivo aleatorio dentro del pasto
+      mov.targetX = Math.random() * anchoMax;
+      mov.targetY = Math.random() * altoMax;
+      // El pollo se mueve en ráfagas cortas; la vaca camina más pausado
+      mov.timerDestino = animal.nombre === 'Pollo'
+        ? 1.5 + Math.random() * 2      // cada 1.5–3.5 s
+        : 3   + Math.random() * 4;     // cada 3–7 s
     }
 
-    // flip según dirección
-    mov.flipX = mov.vx < 0;
+    // ── Calcular vector hacia el destino ─────────────────────
+    const dx = mov.targetX - pos.x;
+    const dy = mov.targetY - pos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // Cambio de dirección/velocidad aleatorio cada ~3-6s
-    if (Math.random() < delta * 0.15) {
-      mov.vx = (Math.random() * 30 + 15) * (Math.random() < 0.5 ? 1 : -1);
+    if (dist > 4) {
+      // Normalizar y aplicar speed
+      const nx = dx / dist;
+      const ny = dy / dist;
+
+      // Suavizado (steering): interpolar velocidad actual hacia la deseada
+      const accel = animal.nombre === 'Pollo' ? 6 : 3; // aceleración
+      mov.vx += (nx * speed - mov.vx) * accel * delta;
+      mov.vy += (ny * speed - mov.vy) * accel * delta;
+
+      // Aplicar movimiento
+      pos.x += mov.vx * delta;
+      pos.y += mov.vy * delta;
+    } else {
+      // Llegó al destino: desacelerar y pausar brevemente
+      mov.vx *= 0.7;
+      mov.vy *= 0.7;
+      // Forzar cambio de destino en el próximo tick
+      mov.timerDestino = 0;
+    }
+
+    // ── Limitar dentro del área del pasto ───────────────────
+    pos.x = Math.max(0, Math.min(anchoMax, pos.x));
+    pos.y = Math.max(0, Math.min(altoMax,  pos.y));
+
+    // ── Flip horizontal según dirección X ───────────────────
+    if (Math.abs(mov.vx) > 2) {   // solo cambiar flip si hay movimiento real
+      mov.flipX = mov.vx < 0;
     }
   });
 
@@ -240,15 +312,27 @@ function actualizarSprites() {
     const mov = corralEstado._movimientos[i];
     if (!pos || !mov) return;
 
-    sprite.style.left      = pos.x + 'px';
-    sprite.style.bottom    = (10 + (pos.y || 0)) + 'px';
-    sprite.style.transform = mov.flipX ? 'scaleX(-1)' : 'scaleX(1)';
+    // Mover el contenedor (posición solamente — sin ningún flip aquí)
+    sprite.style.left   = pos.x + 'px';
+    sprite.style.bottom = (10 + (pos.y || 0)) + 'px';
+
+    // El flip se aplica SOLO al wrapper interno de la imagen,
+    // para que las stats flotantes y el botón NO se voltéen.
+    const flipWrapper = document.getElementById('flip-' + i);
+    if (flipWrapper) {
+      flipWrapper.style.transform = mov.flipX ? 'scaleX(-1)' : 'scaleX(1)';
+    }
 
     // Actualizar imagen si cambió de fase o estado
     const img = sprite.querySelector('.animal-sprite-img');
     if (img) {
       const nuevaSrc = animal.renderizar();
       if (img.src.indexOf(nuevaSrc) === -1) img.src = nuevaSrc;
+
+      // Aplicar tamaño específico de la especie
+      const tam = TAMAÑOS_SPRITE[animal.nombre] || 56;
+      img.style.width  = tam + 'px';
+      img.style.height = tam + 'px';
     }
   });
 }
@@ -411,14 +495,25 @@ function renderizarCorralBloqueado() {
  */
 function renderizarSpriteAnimal(animal, indice) {
   // Solución Ticket 4
+  const tam = TAMAÑOS_SPRITE[animal.nombre] || 56;
   return `
     <div class="animal-sprite" id="sprite-${indice}"
          style="border-color: ${animal.colorUI}">
-      <!-- Stats flotantes: se actualizan en cada tick sin reconstruir el sprite -->
+
+      <!-- Stats flotantes: quedan FUERA del flip-wrapper para no voltearse -->
       <div class="animal-stats-flotantes" id="stats-${indice}">
         ${renderizarStatsFlotantes(animal)}
       </div>
-      <img class="animal-sprite-img" src="${animal.renderizar()}" alt="${animal.nombre}" />
+
+      <!-- flip-wrapper: solo esta capa recibe scaleX(-1) al girar -->
+      <div class="animal-flip-wrapper" id="flip-${indice}">
+        <img class="animal-sprite-img"
+             src="${animal.renderizar()}"
+             alt="${animal.nombre}"
+             onclick="sonarAnimal(${indice})"
+             style="width:${tam}px; height:${tam}px; cursor:pointer" />
+      </div>
+
       <button class="animal-btn-alimentar" onclick="alimentarAnimal(${indice})">
         🌽
       </button>
