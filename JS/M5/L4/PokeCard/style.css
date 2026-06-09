@@ -1,0 +1,765 @@
+/* ==========================================================================
+   1. VARIABLES DE DISEÑO (SISTEMA DE COLORES Y FUENTES)
+   ========================================================================== */
+:root {
+    --bg-gradient-start: #06080c;
+    --bg-gradient-end: #11151f;
+    --panel-bg: rgba(18, 23, 33, 0.65);
+    --panel-border: rgba(255, 255, 255, 0.07);
+    
+    --text-main: #ffffff;
+    --text-muted: #8493a8;
+    
+    --accent-blue: #00f2fe;
+    --accent-purple: #4facfe;
+    --accent-glow: rgba(0, 242, 254, 0.25);
+    
+    --error-red: #ff3366;
+    --error-glow: rgba(255, 51, 102, 0.35);
+    
+    --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    
+    /* Colores Elementales de Pokémon */
+    --type-normal: #a8a77a;
+    --type-fire: #ee8130;
+    --type-water: #6390f0;
+    --type-electric: #f7d02c;
+    --type-grass: #7ac74c;
+    --type-ice: #96d9d6;
+    --type-fighting: #c22e28;
+    --type-poison: #a33ea1;
+    --type-ground: #e2bf65;
+    --type-flying: #a98ff3;
+    --type-psychic: #f95587;
+    --type-bug: #a6b91a;
+    --type-rock: #b6a136;
+    --type-ghost: #735797;
+    --type-dragon: #6f35fc;
+    --type-dark: #705746;
+    --type-steel: #b7b7ce;
+    --type-fairy: #d685ad;
+}
+
+/* ==========================================================================
+   2. ESTILOS BASE
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at center, var(--bg-gradient-end) 0%, var(--bg-gradient-start) 100%);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+/* Scrollbar personalizado y elegante */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+body::-webkit-scrollbar-track {
+    background: var(--bg-gradient-start);
+}
+body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+body::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-purple);
+}
+
+.container {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ==========================================================================
+   3. CABECERA
+   ========================================================================== */
+header {
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #4facfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 2px 8px var(--accent-glow));
+}
+
+header p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* ==========================================================================
+   4. BUSCADOR (SEARCH BOX)
+   ========================================================================== */
+.search-box {
+    display: flex;
+    gap: 12px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 10px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-box:focus-within {
+    border-color: rgba(0, 242, 254, 0.45);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 242, 254, 0.15);
+}
+
+.search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-size: 1rem;
+    padding: 8px 12px;
+    font-family: inherit;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.search-box button {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    border: none;
+    color: #0c0e12;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    padding: 10px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.search-box button:active {
+    transform: translateY(1px);
+}
+
+/* ==========================================================================
+   5. CONTENEDOR DE PANTALLA Y ESTADOS
+   ========================================================================== */
+.display-area {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   6. DISEÑO DE POKÉDEX CARD COMPLETO
+   ========================================================================== */
+.pokemon-card {
+    width: 100%;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 28px;
+    padding: 30px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.pokemon-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Efecto de resplandor neón difuso dinámico */
+.pokemon-card::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: -200px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--dynamic-glow-color, rgba(255,255,255,0.03)) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+    transition: background 0.4s ease;
+}
+
+/* Cabecera de la Tarjeta */
+.card-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.pokemon-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 2.1rem;
+    text-transform: capitalize;
+    letter-spacing: -0.8px;
+    color: var(--text-main);
+    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.pokemon-id {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   GALERÍA DE IMÁGENES INTERACTIVA
+   ========================================================================== */
+.sprite-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    z-index: 1;
+}
+
+.image-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pokeball-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 68%);
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.06);
+    animation: rotateBg 25s linear infinite;
+}
+
+.pokemon-img {
+    width: 165px;
+    height: 165px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    animation: floatImage 4s ease-in-out infinite;
+    z-index: 2;
+    transition: filter 0.3s ease;
+}
+
+/* Fila de miniaturas de sprites */
+.thumbnails-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.sprite-thumb {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sprite-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.sprite-thumb:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.08);
+}
+
+.sprite-thumb.active {
+    background: rgba(0, 242, 254, 0.08);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   BADGES DE TIPOS
+   ========================================================================== */
+.types-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    z-index: 1;
+}
+
+.type-badge {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 6px 18px;
+    border-radius: 12px;
+    color: #07090d;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.type-badge:hover {
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   FICHA DE DATOS FÍSICOS (ALTURA, PESO, XP)
+   ========================================================================== */
+.physicals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    z-index: 1;
+}
+
+.phys-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 18px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.phys-label {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.phys-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text-main);
+}
+
+.phys-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   GRÁFICA DE ESTADÍSTICAS BASE (BASE STATS)
+   ========================================================================== */
+.stats-section {
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.section-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-main);
+    border-left: 3px solid var(--accent-blue);
+    padding-left: 8px;
+    margin-bottom: 2px;
+}
+
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 18px;
+}
+
+.stat-row {
+    display: grid;
+    grid-template-columns: 80px 35px 1fr;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    text-align: right;
+}
+
+.stat-bar-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.stat-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-purple) 0%, var(--accent-blue) 100%);
+    border-radius: 3px;
+    width: 0;
+    transition: width 1s cubic-bezier(0.1, 0.8, 0.25, 1);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ==========================================================================
+   SECCIÓN DE HABILIDADES Y MOVIMIENTOS
+   ========================================================================== */
+.secondary-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    width: 100%;
+    z-index: 1;
+}
+
+/* Habilidades (Abilities) */
+.abilities-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 16px;
+}
+
+.ability-tag {
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-transform: capitalize;
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ability-tag.hidden-ability {
+    background: rgba(255, 193, 7, 0.05);
+    border-color: rgba(255, 193, 7, 0.25);
+    color: #ffc107;
+}
+
+.ability-tag.hidden-ability::after {
+    content: 'Oculta';
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(255, 193, 7, 0.15);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* Movimientos destacados (Moves) */
+.moves-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 16px;
+}
+
+.move-tag {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    text-transform: capitalize;
+    color: var(--text-muted);
+}
+
+/* Animations declarations */
+@keyframes rotateBg {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes floatImage {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* ==========================================================================
+   7. ESTADO DE CARGA (LOADING STATE)
+   ========================================================================== */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 50px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 28px;
+    width: 100%;
+    box-shadow: var(--card-shadow);
+}
+
+.spinner {
+    width: 54px;
+    height: 54px;
+    border: 4px solid rgba(255, 255, 255, 0.05);
+    border-top: 4px solid var(--accent-blue);
+    border-right: 4px solid var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* ==========================================================================
+   8. ESTADO DE ERROR (ERROR STATE)
+   ========================================================================== */
+.error-card {
+    background: rgba(255, 51, 102, 0.04);
+    border: 1px solid rgba(255, 51, 102, 0.2);
+    border-radius: 24px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    box-shadow: 0 12px 40px 0 rgba(255, 51, 102, 0.08);
+    animation: shake 0.5s ease-in-out;
+    width: 100%;
+}
+
+.error-icon {
+    width: 46px;
+    height: 46px;
+    background: rgba(255, 51, 102, 0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--error-red);
+    font-weight: bold;
+    font-size: 1.4rem;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.15);
+}
+
+.error-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--error-red);
+}
+
+.error-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* ==========================================================================
+   9. TARJETA DE BIENVENIDA (WELCOME CARD)
+   ========================================================================== */
+.welcome-card {
+    width: 100%;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 28px;
+    padding: 38px 28px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+.welcome-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: floatImage 4s ease-in-out infinite;
+}
+
+.welcome-icon svg {
+    width: 34px;
+    height: 34px;
+    fill: var(--accent-blue);
+    filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.welcome-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--text-main);
+}
+
+.welcome-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 340px;
+}
+
+/* ==========================================================================
+   10. RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 480px) {
+    body {
+        padding: 20px 10px;
+    }
+    
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .search-box {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+    }
+    
+    .search-box button {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .pokemon-card {
+        padding: 20px;
+    }
+    
+    .pokemon-name {
+        font-size: 1.7rem;
+    }
+    
+    .image-wrapper {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .pokemon-img {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .physicals-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .stat-row {
+        grid-template-columns: 70px 30px 1fr;
+        gap: 8px;
+    }
+}

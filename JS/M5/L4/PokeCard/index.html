@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéCard - Tu PokéDex Personalizada</title>
+    
+    <!-- Fuentes premium de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Enlace a los Estilos Premium -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Lógica de Interfaz de Usuario (Vista - No tocar por los estudiantes) -->
+    <script src="scripts/ui.js" defer></script>
+    
+    <!-- Lógica de API y Eventos (Controlador - Ejercicio para estudiantes) -->
+    <script src="scripts/app.js" defer></script>
+</head>
+<body>
+
+    <div class="container">
+        <!-- CABECERA -->
+        <header>
+            <h1>PokéCard</h1>
+            <p>Descubre datos de tu Pokémon favorito al instante</p>
+        </header>
+
+        <!-- BUSCADOR -->
+        <div class="search-box">
+            <input type="text" id="pokemon-input" placeholder="Ej. Pikachu, Charizard, Gengar..." autocomplete="off">
+            <button id="buscar-btn">Buscar</button>
+        </div>
+
+        <!-- ÁREA DE VISUALIZACIÓN -->
+        <div class="display-area">
+            
+            <!-- 1. CARTA DE BIENVENIDA (ESTADO INICIAL) -->
+            <div id="welcome-card" class="welcome-card">
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 19.9,11H16.1C15.7,9.3 14.3,8 12.5,8C10.7,8 9.3,9.3 8.9,11H5.1A8,8 0 0,1 12,4M12,20C5.1,20 5.1,13 5.1,13H8.9C9.3,14.7 10.7,16 12.5,16C14.3,16 15.7,14.7 16.1,13H19.9C19.9,13 19.9,20 12,20M12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14Z" />
+                    </svg>
+                </div>
+                <div class="welcome-title">¡Te damos la bienvenida a PokéCard!</div>
+                <div class="welcome-desc">Ingresa el nombre o el número de un Pokémon arriba para consultar sus estadísticas elementales, habilidades, sprites y experiencia base.</div>
+            </div>
+
+            <!-- 2. SPINNER DE CARGA (LOADING STATE) -->
+            <div id="loading-state" class="loader-container hidden">
+                <div class="spinner"></div>
+                <div class="loading-text">Consultando la PokéDex...</div>
+            </div>
+
+            <!-- 3. DETALLE DE POKÉMON (SUCCESS STATE - TARJETA POKÉDEX) -->
+            <div id="pokemon-card" class="pokemon-card hidden">
+                <!-- Se inyectará el contenido dinámicamente con JavaScript -->
+            </div>
+
+            <!-- 4. MENSAJE DE ERROR (ERROR STATE) -->
+            <div id="error-message" class="error-card hidden">
+                <div class="error-icon">!</div>
+                <div class="error-title" id="error-title">Error de búsqueda</div>
+                <div class="error-desc" id="error-desc">No pudimos encontrar el Pokémon ingresado. Intenta verificar la ortografía.</div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

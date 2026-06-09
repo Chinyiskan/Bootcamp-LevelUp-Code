@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Memory - ES6+ Edition</title>
+    <meta name="description" content="Juego de memoria estilo Minecraft. Encuentra todos los pares de cartas para ganar.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Fuentes estilo pixel/retro perfectas para la temática Minecraft -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>MINECRAFT MEMORY</h1>
+            <h2>Edición Especial: Sintaxis Moderna ES6+</h2>
+        </header>
+
+        <!-- Sistema de Puntos e Intentos -->
+        <div class="scoreboard">
+            <div class="score-box">Puntos: <span id="points">0</span> XP</div>
+            <div class="score-box">Intentos: <span id="attempts">0</span></div>
+        </div>
+
+        <!-- Rejilla del Juego de Memoria -->
+        <div class="game-grid" id="gameGrid"></div>
+
+        <!-- Botones de Control -->
+        <div class="control-actions">
+            <button id="restartBtn" class="btn">Reiniciar Mundo</button>
+            <button id="muteBtn" class="btn">🔊 Música: ON</button>
+        </div>
+    </div>
+
+    <!-- Modal de Victoria -->
+    <div class="win-overlay" id="winOverlay" aria-modal="true" role="dialog" aria-labelledby="winTitle" hidden>
+        <div class="win-modal">
+            <!-- Partículas de confeti generadas por JS -->
+            <div class="confetti-container" id="confettiContainer"></div>
+
+            <img src="images/win_image.webp" alt="¡Victoria! Alex celebrando con trofeo" class="win-image" id="winImage">
+
+            <div class="win-content">
+                <h2 class="win-title" id="winTitle">¡VICTORIA!</h2>
+                <p class="win-subtitle">¡Todas las parejas encontradas!</p>
+
+                <div class="win-stats">
+                    <div class="win-stat-box">
+                        <span class="win-stat-label">Puntos XP</span>
+                        <span class="win-stat-value" id="finalPoints">0</span>
+                    </div>
+                    <div class="win-stat-box">
+                        <span class="win-stat-label">Intentos</span>
+                        <span class="win-stat-value" id="finalAttempts">0</span>
+                    </div>
+                    <div class="win-stat-box">
+                        <span class="win-stat-label">Precisión</span>
+                        <span class="win-stat-value" id="finalAccuracy">0%</span>
+                    </div>
+                </div>
+
+                <button id="winRestartBtn" class="btn btn-win">⚔ Jugar de Nuevo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts modularizados como se solicitó -->
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
