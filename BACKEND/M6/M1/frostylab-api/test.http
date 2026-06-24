@@ -1,0 +1,14 @@
+### Todos los sabores
+GET http://localhost:3000/sabores
+
+### Info del local
+GET http://localhost:3000/sabores/info
+
+### Helado del día
+GET http://localhost:3000/sabores/destacado
+
+### Buscar sabor por ID (prueba con 1, 2, 3...)
+GET http://localhost:3000/sabores/3
+
+### ID que no existe — debe devolver 404
+GET http://localhost:3000/sabores/99

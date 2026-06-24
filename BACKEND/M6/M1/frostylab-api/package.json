@@ -1,0 +1,13 @@
+{
+	"name": "frsoty-api",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "nodemon server.js"
+	},
+	"dependencies": {
+		"express": "^5.2.1"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.14"
+	}
+}
