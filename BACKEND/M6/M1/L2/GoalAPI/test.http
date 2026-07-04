@@ -1,0 +1,20 @@
+# TICKET 1 — Ver todos los goles
+GET http://localhost:3000/goles
+
+###
+
+# TICKET 2 — Registrar un gol nuevo
+POST http://localhost:3000/goles
+Content-Type: application/json
+
+{
+  "id": 5,
+  "jugador": "Bellingham",
+  "seleccion": "Inglaterra",
+  "minuto": 78
+}
+
+###
+
+# BONUS — Goles de una selección
+GET http://localhost:3000/goles/seleccion/Brasil
