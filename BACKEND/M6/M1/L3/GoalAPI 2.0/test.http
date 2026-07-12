@@ -1,0 +1,48 @@
+# TICKET 1 (semana pasada) — Ver todos los goles
+GET http://localhost:3000/goles
+ 
+###
+ 
+# TICKET 2 (semana pasada) — Registrar un gol nuevo
+POST http://localhost:3000/goles
+Content-Type: application/json
+ 
+{
+  "id": 5,
+  "jugador": "Bellingham",
+  "seleccion": "Inglaterra",
+  "minuto": 78
+}
+ 
+###
+ 
+# BONUS (semana pasada) — Goles de una selección
+GET http://localhost:3000/goles/seleccion/Brasil
+ 
+###
+ 
+# TICKET 1 (hoy) — Corregir el minuto de un gol
+PUT http://localhost:3000/goles/2
+Content-Type: application/json
+ 
+{
+  "id": 2,
+  "jugador": "Mbappé",
+  "seleccion": "Francia",
+  "minuto": 39
+}
+ 
+###
+ 
+# TICKET 2 (hoy) — Anular un gol por VAR
+DELETE http://localhost:3000/goles/3
+ 
+###
+ 
+# 🔥 EXTRA 1 (hoy) — Goles ordenados por minuto
+GET http://localhost:3000/goles/ordenados
+ 
+###
+ 
+# 🔥 EXTRA 2 (hoy) — Estadísticas del partido
+GET http://localhost:3000/goles/estadisticas
