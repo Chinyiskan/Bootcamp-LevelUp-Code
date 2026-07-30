@@ -1,0 +1,30 @@
+### Traer todas las criaturas
+GET http://localhost:3000/criaturas
+
+### Traer una sola criatura por ID (Bonus)
+GET http://localhost:3000/criaturas/1
+
+### Crear una nueva criatura (Ticket 1)
+POST http://localhost:3000/criaturas
+Content-Type: application/json
+
+{
+  "nombre": "Dragón de Fuego",
+  "tipo": "Fuego",
+  "poder": 95,
+  "capturada": false
+}
+
+### Actualizar una criatura por ID (Ticket 2)
+PUT http://localhost:3000/criaturas/1
+Content-Type: application/json
+
+{
+  "nombre": "Dragón de Fuego Legendario",
+  "tipo": "Fuego",
+  "poder": 100,
+  "capturada": true
+}
+
+### Eliminar una criatura por ID (Ticket 3)
+DELETE http://localhost:3000/criaturas/1

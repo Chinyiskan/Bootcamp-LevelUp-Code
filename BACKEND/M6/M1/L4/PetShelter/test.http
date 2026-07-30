@@ -1,0 +1,30 @@
+### Ver todas las mascotas
+GET http://localhost:3000/mascotas
+
+### Ver una mascota por id
+GET http://localhost:3000/mascotas/1
+
+### Registrar una mascota nueva (esto falla hasta que arreglen el bug)
+POST http://localhost:3000/mascotas
+Content-Type: application/json
+
+{
+    "nombre": "Toby",
+    "especie": "Perro",
+    "edad": 2,
+    "adoptado": false
+}
+
+### Actualizar una mascota
+PUT http://localhost:3000/mascotas/2
+Content-Type: application/json
+
+{
+    "nombre": "Mishi",
+    "especie": "Gato",
+    "edad": 1,
+    "adoptado": true
+}
+
+### Eliminar una mascota
+DELETE http://localhost:3000/mascotas/3

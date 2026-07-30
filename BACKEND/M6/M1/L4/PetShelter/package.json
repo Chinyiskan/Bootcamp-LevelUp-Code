@@ -1,0 +1,18 @@
+{
+  "name": "petshelter",
+  "version": "1.0.0",
+  "description": "**PetShelter** es un refugio de mascotas que digitalizó su registro de animales hace tres meses. El becario que armó el backend ya no trabaja aquí — se fue a otro proyecto y dejó todo funcionando, pero amontonado en un solo archivo, sin ningún orden.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
