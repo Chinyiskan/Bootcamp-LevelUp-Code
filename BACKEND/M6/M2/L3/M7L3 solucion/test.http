@@ -1,0 +1,38 @@
+### Registro — debería responder 201
+POST http://localhost:3000/registro
+Content-Type: application/json
+
+{
+  "nombre": "Neo",
+  "correo": "neo@academia.dev",
+  "clave": "matrix123"
+}
+
+### Login con credenciales correctas — debería responder con { token }
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "correo": "neo@academia.dev",
+  "clave": "matrix123"
+}
+
+### Login con clave incorrecta — debería responder 401
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "correo": "neo@academia.dev",
+  "clave": "claveMala"
+}
+
+### Perfil SIN token — debería responder 401
+GET http://localhost:3000/perfil
+
+### Perfil CON token — reemplaza <TOKEN> por el que recibiste en el login
+GET http://localhost:3000/perfil
+Authorization: Bearer <TOKEN>
+
+### Nivel 2 CON token (Reemplaza <TOKEN> por el token recibido en el login)
+GET http://localhost:3000/secreto-nivel-2
+Authorization: Bearer <TOKEN>

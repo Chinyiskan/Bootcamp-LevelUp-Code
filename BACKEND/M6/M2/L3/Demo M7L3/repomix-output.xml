@@ -1,0 +1,199 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+config/
+  supabaseClient.js
+controllers/
+  auth.controller.js
+middlewares/
+  verificarPase.js
+routes/
+  auth.routes.js
+.gitignore
+server.js
+test.http
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="config/supabaseClient.js">
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+module.exports = supabase;
+</file>
+
+<file path="controllers/auth.controller.js">
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const supabase = require('../config/supabaseClient');
+
+const registrarJugador = async (req, res) => {
+  const { nombre, correo, clave } = req.body;
+
+  const hashClave = await bcrypt.hash(clave, 10);
+
+  const { error } = await supabase
+    .from('jugadores')
+    .insert({ nombre, correo, clave: hashClave });
+
+  if (error) {
+    return res.status(500).json({ mensaje: 'No se pudo registrar el jugador' });
+  }
+
+  return res.status(201).json({ mensaje: 'Jugador registrado correctamente' });
+};
+
+const iniciarSesion = async (req, res) => {
+  const { correo, clave } = req.body;
+
+  const { data, error } = await supabase
+    .from('jugadores')
+    .select('id, nombre, clave')
+    .eq('correo', correo)
+    .single();
+
+  if (error || !data) {
+    return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+  }
+
+  const esCorrecta = await bcrypt.compare(clave, data.clave);
+
+  if (!esCorrecta) {
+    return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+  }
+
+  const token = jwt.sign(
+    { id: data.id, nombre: data.nombre },
+    process.env.JWT_SECRET,
+    { expiresIn: '2h' }
+  );
+
+  return res.json({ token });
+};
+
+const verPerfil = (req, res) => {
+  res.json({
+    mensaje: 'Bienvenido al comando, ' + req.jugador.nombre,
+  });
+};
+
+module.exports = { registrarJugador, iniciarSesion, verPerfil };
+</file>
+
+<file path="middlewares/verificarPase.js">
+const jwt = require('jsonwebtoken');
+
+const verificarPase = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ mensaje: 'No autorizado' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const datos = jwt.verify(token, process.env.JWT_SECRET);
+    req.jugador = { id: datos.id, nombre: datos.nombre };
+    next();
+  } catch (error) {
+    return res.status(401).json({ mensaje: 'Token inválido o vencido' });
+  }
+};
+
+module.exports = verificarPase;
+</file>
+
+<file path="routes/auth.routes.js">
+const express = require('express');
+const verificarPase = require('../middlewares/verificarPase');
+const { registrarJugador, iniciarSesion, verPerfil } = require('../controllers/auth.controller');
+
+const router = express.Router();
+router.post('/registro', registrarJugador);
+router.post('/login', iniciarSesion);
+router.get('/perfil', verificarPase, verPerfil);
+
+module.exports = router;
+</file>
+
+<file path=".gitignore">
+node_modules/
+.env
+</file>
+
+<file path="server.js">
+require('dotenv').config();
+const express = require('express');
+const authRoutes = require('./routes/auth.routes');
+
+const app = express();
+app.use(express.json());
+app.use('/', authRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Demo corriendo en http://localhost:${PORT}`));
+</file>
+
+<file path="test.http">
+### Registro
+POST http://localhost:3000/registro
+Content-Type: application/json
+
+{ "nombre": "Comandante Vega", "correo": "vega@personajes.dev", "clave": "codigo123" }
+
+### Login
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{ "correo": "vega@personajes.dev", "clave": "codigo123" }
+
+### Perfil sin token — debe dar 401
+GET http://localhost:3000/perfil
+
+### Perfil con token — reemplaza <TOKEN>
+GET http://localhost:3000/perfil
+Authorization: Bearer <TOKEN>
+</file>
+
+</files>

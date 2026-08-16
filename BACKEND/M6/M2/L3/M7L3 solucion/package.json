@@ -1,0 +1,20 @@
+{
+  "name": "academia-hackers",
+  "version": "1.0.0",
+  "description": "Academia de Hackers: backend de referencia con autenticacion bcrypt + JWT y Supabase",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["express", "supabase", "bcrypt", "jwt", "autenticacion"],
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

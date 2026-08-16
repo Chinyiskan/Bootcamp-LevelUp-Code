@@ -1,0 +1,204 @@
+### ==========================================
+### JEFES
+### ==========================================
+
+### Traer todos los jefes
+GET http://localhost:3000/jefes
+
+### Traer un solo jefe por ID
+GET http://localhost:3000/jefes/1
+
+### Filtrar jefes por tipo
+GET http://localhost:3000/jefes/filtrar?tipo=Dragón
+
+### Filtrar sin mandar tipo (Bonus — debe devolver todos)
+GET http://localhost:3000/jefes/filtrar
+
+### Crear un nuevo jefe
+POST http://localhost:3000/jefes
+Content-Type: application/json
+
+{
+  "nombre": "Skarn el Quebrantahuesos",
+  "tipo": "Gigante",
+  "vida": 600,
+  "nivel_amenaza": 10,
+  "derrotado": false
+}
+
+### Actualizar un jefe por ID
+PUT http://localhost:3000/jefes/1
+Content-Type: application/json
+
+{
+  "nombre": "Ignathrax el Devorador",
+  "tipo": "Dragón",
+  "vida": 200,
+  "nivel_amenaza": 9,
+  "derrotado": false
+}
+
+### Eliminar un jefe por ID
+DELETE http://localhost:3000/jefes/1
+
+
+### ==========================================
+### OBJETOS
+### ==========================================
+
+### Traer todos los objetos
+GET http://localhost:3000/objetos
+
+### Traer un solo objeto por ID
+GET http://localhost:3000/objetos/1
+
+### Filtrar objetos por tipo
+GET http://localhost:3000/objetos/filtrar?tipo=Arma
+
+### Filtrar sin mandar tipo (Bonus — debe devolver todos)
+GET http://localhost:3000/objetos/filtrar
+
+### Crear un nuevo objeto
+POST http://localhost:3000/objetos
+Content-Type: application/json
+
+{
+  "nombre": "Poción de Curación Mayor",
+  "tipo": "Poción",
+  "valor": 150,
+  "equipado": false
+}
+
+### Actualizar un objeto por ID
+PUT http://localhost:3000/objetos/1
+Content-Type: application/json
+
+{
+  "nombre": "Espada del Alba Bendita",
+  "tipo": "Arma",
+  "valor": 1000,
+  "equipado": true
+}
+
+### Eliminar un objeto por ID
+DELETE http://localhost:3000/objetos/1
+
+
+### ==========================================
+### HECHIZOS
+### ==========================================
+
+### Traer todos los hechizos
+GET http://localhost:3000/hechizos
+
+### Traer un solo hechizo por ID
+GET http://localhost:3000/hechizos/1
+
+### Filtrar hechizos por escuela
+GET http://localhost:3000/hechizos/filtrar?escuela=Evocación
+
+### Filtrar sin mandar escuela (Bonus — debe devolver todos)
+GET http://localhost:3000/hechizos/filtrar
+
+### Crear un nuevo hechizo
+POST http://localhost:3000/hechizos
+Content-Type: application/json
+
+{
+  "nombre": "Rayo Congelante",
+  "escuela": "Evocación",
+  "mana_requerido": 20,
+  "aprendido": true
+}
+
+### Actualizar un hechizo por ID
+PUT http://localhost:3000/hechizos/1
+Content-Type: application/json
+
+{
+  "nombre": "Bola de Fuego Infernál",
+  "escuela": "Evocación",
+  "mana_requerido": 45,
+  "aprendido": true
+}
+
+### Eliminar un hechizo por ID
+DELETE http://localhost:3000/hechizos/1
+
+### ==========================================
+### PERSONAJES
+### ==========================================
+
+### Traer todos los personajes
+GET http://localhost:3000/personajes
+
+### Traer un solo personaje por ID
+GET http://localhost:3000/personajes/1
+
+### Filtrar personajes por clase
+GET http://localhost:3000/personajes/filtrar?clase=Guerrero
+
+### Filtrar sin mandar clase (Bonus — debe devolver todos)
+GET http://localhost:3000/personajes/filtrar
+
+### Crear un nuevo personaje
+POST http://localhost:3000/personajes
+Content-Type: application/json
+
+{
+  "nombre": "Tursk",
+  "clase": "Bárbaro",
+  "nivel": 50,
+  "vivo": false
+}
+
+### Actualizar un personaje por ID
+PUT http://localhost:3000/personajes/1
+Content-Type: application/json
+
+{
+  "nombre": "Kael",
+  "clase": "Guerrero",
+  "nivel": 25,
+  "vivo": true
+}
+
+### Eliminar un personaje por ID
+DELETE http://localhost:3000/personajes/5
+
+
+
+
+### Todas las monturas
+GET http://localhost:3000/monturas
+
+### Una montura por id
+GET http://localhost:3000/monturas/1
+
+### Crear una montura
+POST http://localhost:3000/monturas
+Content-Type: application/json
+
+{
+  "nombre": "Duendemon",
+  "especie": "Duende",
+  "velocidad": 500,
+  "domada": true
+}
+
+### Actualizar una montura
+PUT http://localhost:3000/monturas/1
+Content-Type: application/json
+
+{
+  "nombre": "Trueno",
+  "especie": "Grifo",
+  "velocidad": 90,
+  "domada": true
+}
+
+### Eliminar una montura que SÍ existe
+DELETE http://localhost:3000/monturas/1
+
+### Eliminar una montura que NO existe
+DELETE http://localhost:3000/monturas/999

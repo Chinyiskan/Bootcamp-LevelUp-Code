@@ -1,0 +1,88 @@
+/* Estilos compartidos por las 3 páginas: el foco de la lección es el backend,
+   aquí solo se busca una interfaz mínima, centrada y legible. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background: #0b0e14;
+  color: #c7ffc0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+  color: #6bff6b;
+}
+
+form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  font-size: 14px;
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #2f3644;
+  border-radius: 6px;
+  background: #141a24;
+  color: #eaffea;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6bff6b;
+}
+
+button {
+  padding: 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #6bff6b;
+  color: #0b0e14;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #8dff8d;
+}
+
+.mensaje {
+  margin-top: 16px;
+  min-height: 20px;
+  text-align: center;
+}
+
+.mensaje.error {
+  color: #ff7b72;
+}
+
+.mensaje.exito {
+  color: #6bff6b;
+}
+
+.enlace {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.enlace a {
+  color: #6bff6b;
+}

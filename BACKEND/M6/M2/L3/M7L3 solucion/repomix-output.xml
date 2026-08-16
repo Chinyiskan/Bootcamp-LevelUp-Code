@@ -1,0 +1,680 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+config/
+  supabaseClient.js
+controllers/
+  auth.controller.js
+middlewares/
+  verificarPase.js
+public/
+  css/
+    estilo.css
+  js/
+    dashboard.js
+    login.js
+    registro.js
+  dashboard.html
+  index.html
+  login.html
+  registro.html
+routes/
+  auth.routes.js
+.gitignore
+package.json
+REDME.md
+server.js
+test.http
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="config/supabaseClient.js">
+// Cliente único de Supabase: se reutiliza en todo el backend para no abrir conexiones repetidas.
+const { createClient } = require('@supabase/supabase-js');
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+module.exports = supabase;
+</file>
+
+<file path="controllers/auth.controller.js">
+// Lógica de registro, login y perfil: cada controlador cumple una sola responsabilidad.
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const supabase = require('../config/supabaseClient');
+
+// ✅ YA IMPLEMENTADO — úsalo como guía para completar iniciarSesion
+// POST /registro — dado nombre, correo y clave, crea un recluta con su clave hasheada.
+const registrarRecluta = async (req, res) => {
+  const { nombre, correo, clave } = req.body;
+
+  // Nunca guardar la clave en texto plano: el hash protege al recluta ante filtraciones.
+  const hashClave = await bcrypt.hash(clave, 10);
+
+  const { error } = await supabase
+    .from('reclutas')
+    .insert({ nombre, correo, clave: hashClave });
+
+  if (error) {
+    return res.status(500).json({ mensaje: 'No se pudo registrar el recluta' });
+  }
+
+  return res.status(201).json({ mensaje: 'Recluta registrado correctamente' });
+};
+
+// 🎫 TICKET 2 — Completa el login
+// POST /login — valida credenciales y entrega un token JWT de acceso.
+const iniciarSesion = async (req, res) => {
+  const { correo, clave } = req.body;
+
+  // Paso 1 — Busca al recluta por correo en la base de datos.
+  const { data, error } = await supabase
+    .from('reclutas')
+    .select('id, nombre, clave')
+    .eq('correo', correo)
+    .single();
+
+  // Paso 2 — Si hubo error o no se encontró el recluta, respondemos 401.
+  // Usamos el mismo mensaje para no revelar si el correo existe o no.
+  if (error || !data) {
+    return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+  }
+
+  // Paso 3 — Comparamos la clave que llegó con el hash que está guardado.
+  const claveCorrecta = await bcrypt.compare(clave, data.clave);
+
+  // Paso 4 — Si la clave no coincide, misma respuesta 401.
+  if (!claveCorrecta) {
+    return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+  }
+
+  // Paso 5 — Todo ok: generamos el token JWT con id y nombre del recluta.
+  const token = jwt.sign(
+    { id: data.id, nombre: data.nombre },
+    process.env.JWT_SECRET,
+    { expiresIn: '2h' }
+  );
+
+  // Paso 6 — Enviamos el token al cliente.
+  return res.json({ token });
+};
+
+// 🎫 TICKET 4 — Completa el perfil protegido
+// GET /perfil — protegida; usa los datos que dejó el middleware en req.recluta.
+const verPerfil = (req, res) => {
+  // El middleware ya verificó el token y guardó { id, nombre } en req.recluta.
+  // Solo lo leemos y lo respondemos.
+  res.json({
+    mensaje: 'Bienvenido hacker, tus secretos están a salvo',
+    nombre: req.recluta.nombre,
+  });
+};
+
+module.exports = { registrarRecluta, iniciarSesion, verPerfil };
+</file>
+
+<file path="middlewares/verificarPase.js">
+// Middleware que protege las rutas: sin un token válido nadie entra al panel.
+const jwt = require('jsonwebtoken');
+
+// 🎫 TICKET 3 — Completa el middleware de verificación
+const verificarPase = (req, res, next) => {
+  // Paso 1 — Leer el header Authorization. Si no existe o no empieza con "Bearer ",
+  // respondemos 401 y cortamos el flujo con return.
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ mensaje: 'No autorizado' });
+  }
+
+  // Paso 2 — Extraer solo el token (lo que va después de "Bearer ").
+  const token = authHeader.split(' ')[1];
+
+  // Paso 3 — Verificar el token. Si es válido, guardamos { id, nombre } en
+  // req.recluta y dejamos pasar con next(). Si falla, respondemos 401.
+  try {
+    const datos = jwt.verify(token, process.env.JWT_SECRET);
+    req.recluta = { id: datos.id, nombre: datos.nombre };
+    next();
+  } catch (error) {
+    return res.status(401).json({ mensaje: 'Token inválido o vencido' });
+  }
+};
+
+module.exports = verificarPase;
+</file>
+
+<file path="public/css/estilo.css">
+/* Estilos compartidos por las 3 páginas: el foco de la lección es el backend,
+   aquí solo se busca una interfaz mínima, centrada y legible. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background: #0b0e14;
+  color: #c7ffc0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+  color: #6bff6b;
+}
+
+form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  font-size: 14px;
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #2f3644;
+  border-radius: 6px;
+  background: #141a24;
+  color: #eaffea;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6bff6b;
+}
+
+button {
+  padding: 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #6bff6b;
+  color: #0b0e14;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #8dff8d;
+}
+
+.mensaje {
+  margin-top: 16px;
+  min-height: 20px;
+  text-align: center;
+}
+
+.mensaje.error {
+  color: #ff7b72;
+}
+
+.mensaje.exito {
+  color: #6bff6b;
+}
+
+.enlace {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.enlace a {
+  color: #6bff6b;
+}
+</file>
+
+<file path="public/js/dashboard.js">
+// Panel: si hay token, pide el perfil protegido; si no, devuelve al login.
+const mensaje = document.getElementById('mensaje');
+const token = localStorage.getItem('token');
+
+// Sin token no hay sesión válida: directamente al login.
+if (!token) {
+  window.location.href = 'login.html';
+}
+
+const cargarPerfil = async (token) => {
+  try {
+    const respuesta = await fetch('/perfil', {
+      method: 'GET',
+      headers: {
+        // El backend espera el formato "Bearer <token>".
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!respuesta.ok) {
+      // Token inválido o vencido: limpiar y volver al login.
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const datos = await respuesta.json();
+    mensaje.textContent = `${datos.mensaje}, ${datos.nombre}`;
+    mensaje.className = 'mensaje exito';
+  } catch (error) {
+    mensaje.textContent = 'Error de conexión con el servidor';
+    mensaje.className = 'mensaje error';
+  }
+};
+
+if (token) {
+  cargarPerfil(token);
+}
+</file>
+
+<file path="public/js/login.js">
+// Login: valida credenciales y guarda el token para las próximas peticiones.
+const formLogin = document.getElementById('formLogin');
+const mensaje = document.getElementById('mensaje');
+
+formLogin.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const cuerpo = {
+    correo: document.getElementById('correo').value,
+    clave: document.getElementById('clave').value,
+  };
+
+  try {
+    const respuesta = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cuerpo),
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mensaje.textContent = datos.mensaje || 'Error al iniciar sesión';
+      mensaje.className = 'mensaje error';
+      return;
+    }
+
+    // Guardamos el token en localStorage para usarlo en el panel protegido.
+    localStorage.setItem('token', datos.token);
+
+    // Sesión iniciada: ir al panel.
+    window.location.href = 'dashboard.html';
+  } catch (error) {
+    mensaje.textContent = 'Error de conexión con el servidor';
+    mensaje.className = 'mensaje error';
+  }
+});
+</file>
+
+<file path="public/js/registro.js">
+// Registro: envía datos a /registro y, en éxito, redirige al login.
+const formRegistro = document.getElementById('formRegistro');
+const mensaje = document.getElementById('mensaje');
+
+formRegistro.addEventListener('submit', async (event) => {
+  // Evitar que el formulario recargue la página.
+  event.preventDefault();
+
+  const cuerpo = {
+    nombre: document.getElementById('nombre').value,
+    correo: document.getElementById('correo').value,
+    clave: document.getElementById('clave').value,
+  };
+
+  try {
+    const respuesta = await fetch('/registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cuerpo),
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mensaje.textContent = datos.mensaje || 'Error al registrar';
+      mensaje.className = 'mensaje error';
+      return;
+    }
+
+    // Registro exitoso: mostrar el mensaje y llevar al recluta al login.
+    mensaje.textContent = datos.mensaje;
+    mensaje.className = 'mensaje exito';
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1000);
+  } catch (error) {
+    mensaje.textContent = 'Error de conexión con el servidor';
+    mensaje.className = 'mensaje error';
+  }
+});
+</file>
+
+<file path="public/dashboard.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academia de Hackers | Panel</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <h1>Panel Secreto</h1>
+
+  <div id="mensaje" class="mensaje"></div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/index.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0; url=/registro.html" />
+  <title>Academia de Hackers</title>
+</head>
+<body>
+  <p>Redirigiendo a <a href="/registro.html">registro</a>...</p>
+</body>
+</html>
+</file>
+
+<file path="public/login.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academia de Hackers | Login</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <h1>Ingreso a la Academia</h1>
+
+  <form id="formLogin">
+    <label for="correo">Correo</label>
+    <input type="email" id="correo" name="correo" required />
+
+    <label for="clave">Clave</label>
+    <input type="password" id="clave" name="clave" required />
+
+    <button type="submit">Ingresar</button>
+  </form>
+
+  <div id="mensaje" class="mensaje"></div>
+
+  <p class="enlace">¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/registro.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academia de Hackers | Registro</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <h1>Registro de Recluta</h1>
+
+  <form id="formRegistro">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" required />
+
+    <label for="correo">Correo</label>
+    <input type="email" id="correo" name="correo" required />
+
+    <label for="clave">Clave</label>
+    <input type="password" id="clave" name="clave" required />
+
+    <button type="submit">Unirme a la Academia</button>
+  </form>
+
+  <div id="mensaje" class="mensaje"></div>
+
+  <p class="enlace">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+
+  <script src="js/registro.js"></script>
+</body>
+</html>
+</file>
+
+<file path="routes/auth.routes.js">
+// La vista de rutas separa "qué URL" de "qué hace": los controladores llevan la lógica.
+const express = require('express');
+const verificarPase = require('../middlewares/verificarPase');
+const {
+  registrarRecluta,
+  iniciarSesion,
+  verPerfil,
+} = require('../controllers/auth.controller');
+
+const router = express.Router();
+
+router.post('/registro', registrarRecluta);
+router.post('/login', iniciarSesion);
+
+// Perfil está protegido: solo pasa si el token es válido (verificarPase primero).
+router.get('/perfil', verificarPase, verPerfil);
+
+// 🔥 BONUS — Misma protección, ruta diferente. Un middleware sirve para muchas rutas.
+router.get('/secreto-nivel-2', verificarPase, (req, res) => {
+  res.json({
+    mensaje: '¡Nivel 2 desbloqueado! Ahora sabes que un middleware protege cualquier ruta.',
+    nombre: req.recluta.nombre,
+  });
+});
+
+module.exports = router;
+</file>
+
+<file path=".gitignore">
+node_modules/
+.env
+</file>
+
+<file path="package.json">
+{
+  "name": "academia-hackers",
+  "version": "1.0.0",
+  "description": "Academia de Hackers: backend de referencia con autenticacion bcrypt + JWT y Supabase",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["express", "supabase", "bcrypt", "jwt", "autenticacion"],
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
+</file>
+
+<file path="REDME.md">
+# 🕶️ Academia de Hackers — Misión 27
+
+## 📌 Premisa
+
+La Academia necesita un sistema de acceso real. Hasta ahora cualquiera podía
+entrar a cualquier ruta sin identificarse — hoy eso se termina. Tu trabajo es
+completar el sistema de autenticación: que solo reclutas registrados puedan
+entrar, que sus claves nunca se guarden en texto plano, y que el panel secreto
+solo se abra con un pase válido.
+
+## 💡 ¿Por qué vale la pena?
+
+El registro ya viene resuelto como guía — síguelo de cerca, porque el login
+usa exactamente el mismo tipo de piezas (bcrypt, Supabase) en el orden
+inverso: en vez de crear un hash, lo comparas. Si completas los 3 tickets,
+tendrás el mismo sistema de acceso que usan apps reales todos los días.
+
+## 🎫 Tickets
+
+1. ~~Registro~~ — ya resuelto, úsalo de guía.
+2. **Login** — `controllers/auth.controller.js` → `iniciarSesion`
+3. **Middleware de verificación** — `middlewares/verificarPase.js`
+4. **Perfil protegido** — `controllers/auth.controller.js` → `verPerfil`
+
+## ▶️ Cómo correr el proyecto
+pnpm install
+pnpm dev
+
+Abre `http://localhost:3000/registro.html` en el navegador.
+
+## 🧪 Cómo probar (usa test.http con REST Client)
+
+Prueba primero con REST Client, y cuando el login te devuelva un token,
+pruébalo también desde el navegador con el flujo completo: regístrate,
+inicia sesión, y verifica que el panel te reconozca.
+
+## 🔥 Bonus (10 min)
+
+Crea una segunda ruta protegida, `GET /secreto-nivel-2`, que use el MISMO
+`verificarPase` y devuelva un mensaje distinto (el que quieras). No dupliques
+lógica — la idea es que veas que un mismo middleware protege cualquier
+cantidad de rutas sin reescribir nada.
+</file>
+
+<file path="server.js">
+// Cargar variables de entorno ANTES de usar el cliente, para que las credenciales estén disponibles.
+require('dotenv').config();
+
+// Express: maneja rutas, JSON y archivos estáticos.
+const express = require('express');
+
+// Cors: permite peticiones desde el navegador sin bloquear la política de mismo origen.
+const cors = require('cors');
+
+// Rutas de autenticación (registro, login, perfil).
+const authRoutes = require('./routes/auth.routes');
+
+// Instancia de la aplicación.
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+// Habilitar peticiones entre distintos orígenes y parsear JSON entrante.
+app.use(cors());
+app.use(express.json());
+
+// Servir el frontend estático desde la carpeta "public".
+app.use(express.static('public'));
+
+// Montar todas las rutas de autenticación bajo el prefijo raíz.
+app.use('/', authRoutes);
+
+// Levantar el servidor y anunciar el puerto de escucha.
+app.listen(PORT, () => {
+  console.log(`Academia de Hackers escuchando en http://localhost:${PORT}`);
+});
+</file>
+
+<file path="test.http">
+### Registro — debería responder 201
+POST http://localhost:3000/registro
+Content-Type: application/json
+
+{
+  "nombre": "Neo",
+  "correo": "neo@academia.dev",
+  "clave": "matrix123"
+}
+
+### Login con credenciales correctas — debería responder con { token }
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "correo": "neo@academia.dev",
+  "clave": "matrix123"
+}
+
+### Login con clave incorrecta — debería responder 401
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "correo": "neo@academia.dev",
+  "clave": "claveMala"
+}
+
+### Perfil SIN token — debería responder 401
+GET http://localhost:3000/perfil
+
+### Perfil CON token — reemplaza <TOKEN> por el que recibiste en el login
+GET http://localhost:3000/perfil
+Authorization: Bearer <TOKEN>
+
+### Nivel 2 CON token (Reemplaza <TOKEN> por el token recibido en el login)
+GET http://localhost:3000/secreto-nivel-2
+Authorization: Bearer <TOKEN>
+</file>
+
+</files>

@@ -1,0 +1,18 @@
+### Registro
+POST http://localhost:3000/registro
+Content-Type: application/json
+
+{ "nombre": "Comandante Vega", "correo": "vega@personajes.dev", "clave": "codigo123" }
+
+### Login
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{ "correo": "vega@personajes.dev", "clave": "codigo123" }
+
+### Perfil sin token — debe dar 401
+GET http://localhost:3000/perfil
+
+### Perfil con token — reemplaza <TOKEN>
+GET http://localhost:3000/perfil
+Authorization: Bearer <TOKEN>
