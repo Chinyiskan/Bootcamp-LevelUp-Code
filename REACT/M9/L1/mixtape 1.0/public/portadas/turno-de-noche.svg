@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050a18"/>
+      <stop offset="1" stop-color="#123a5a"/>
+    </linearGradient>
+    <radialGradient id="planeta" cx="0.35" cy="0.35" r="0.8">
+      <stop offset="0" stop-color="#9ff0ff"/>
+      <stop offset="0.5" stop-color="#61dafb"/>
+      <stop offset="1" stop-color="#1b4f72"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#cielo)"/>
+  <g fill="#cfefff">
+    <circle cx="40" cy="50" r="2"/><circle cx="120" cy="30" r="1.5"/><circle cx="330" cy="60" r="2"/>
+    <circle cx="370" cy="140" r="1.5"/><circle cx="60" cy="160" r="1.5"/><circle cx="200" cy="80" r="1"/>
+    <circle cx="300" cy="200" r="1"/><circle cx="90" cy="250" r="1"/>
+  </g>
+  <circle cx="230" cy="190" r="95" fill="url(#planeta)"/>
+  <ellipse cx="230" cy="195" rx="160" ry="28" fill="none" stroke="#61dafb" stroke-width="4" opacity="0.7" transform="rotate(-14 230 195)"/>
+  <rect x="0" y="300" width="400" height="100" fill="#07101f"/>
+  <g fill="#61dafb" opacity="0.85">
+    <rect x="30" y="330" width="12" height="40"/><rect x="50" y="315" width="12" height="55"/>
+    <rect x="70" y="340" width="12" height="30"/><rect x="90" y="322" width="12" height="48"/>
+    <rect x="110" y="345" width="12" height="25"/><rect x="130" y="328" width="12" height="42"/>
+  </g>
+</svg>
