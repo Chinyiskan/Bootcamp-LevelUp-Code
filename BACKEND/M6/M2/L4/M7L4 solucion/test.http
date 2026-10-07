@@ -1,0 +1,206 @@
+### ==============================================================================
+### HANGAR DE MECHAS - SUITE DE PRUEBAS DE ENDPOINTS (REST Client de VS Code)
+### ==============================================================================
+### Variables globales de entorno local
+@baseUrl = http://localhost:3000
+
+### ==============================================================================
+### 1. REGISTRO E INICIO DE SESIÓN DE PILOTOS DE PRUEBA
+### ==============================================================================
+
+### 1.1 Registrar Piloto 1 (Valquiria)
+# @name registrarPiloto1
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+  "nombre": "Valquiria-01",
+  "correo": "valquiria@hangar.space",
+  "clave": "secreto123"
+}
+
+### 1.2 Iniciar Sesión con Piloto 1 (Obtener Token)
+# @name loginPiloto1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "valquiria@hangar.space",
+  "clave": "secreto123"
+}
+
+### Guardamos el token de Piloto 1 para las siguientes peticiones
+@tokenPiloto1 = {{loginPiloto1.response.body.token}}
+
+### 1.3 Registrar Piloto 2 (Tigre)
+# @name registrarPiloto2
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+  "nombre": "Tigre-Blindado",
+  "correo": "tigre@hangar.space",
+  "clave": "secreto456"
+}
+
+### 1.4 Iniciar Sesión con Piloto 2 (Obtener Token)
+# @name loginPiloto2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "tigre@hangar.space",
+  "clave": "secreto456"
+}
+
+### Guardamos el token de Piloto 2 para probar intentos de usurpación
+@tokenPiloto2 = {{loginPiloto2.response.body.token}}
+
+
+### ==============================================================================
+### 2. TICKET 6 (BONUS) - CONSULTA DE PERFIL SIN HASH DE CLAVE
+### ==============================================================================
+
+### 2.1 Consultar perfil de Piloto 1 (Debe retornar id, nombre, correo, rol; NUNCA la clave)
+GET {{baseUrl}}/auth/perfil
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ==============================================================================
+### 3. TICKET 1 - CREAR MECHAS (ASIGNACIÓN AUTOMÁTICA POR TOKEN)
+### ==============================================================================
+
+### 3.1 Crear Mecha para Piloto 1 (Esperado: 201 Created)
+# @name crearMecha1
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Titán Némesis",
+  "clase": "Asalto",
+  "potencia": 90,
+  "blindaje": 85,
+  "velocidad": 60
+}
+
+### Guardamos el ID de la mecha recién creada para las pruebas posteriores
+@mechaId = {{crearMecha1.response.body.mecha.id}}
+
+### 3.2 Crear una segunda Mecha de Sigilo para Piloto 1 (Esperado: 201 Created)
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Sombra Espectral",
+  "clase": "Sigilo",
+  "potencia": 65,
+  "blindaje": 50,
+  "velocidad": 95
+}
+
+### 3.3 Crear Mecha para Piloto 2 (Esperado: 201 Created)
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto2}}
+Content-Type: application/json
+
+{
+  "nombre": "Baluarte Égida",
+  "clase": "Soporte",
+  "potencia": 50,
+  "blindaje": 98,
+  "velocidad": 40
+}
+
+
+### ==============================================================================
+### 4. TICKET 2 - LISTAR MIS MECHAS (AISLAMIENTO DE PROPIEDAD)
+### ==============================================================================
+
+### 4.1 Listar mechas de Piloto 1 (Esperado: 200 OK con solo las 2 mechas de Piloto 1)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+
+### 4.2 Listar mechas de Piloto 2 (Esperado: 200 OK con solo la mecha de Piloto 2)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto2}}
+
+
+### ==============================================================================
+### 5. TICKET 3 - EDITAR MECHA (CONTROL DE PROPIEDAD Y PREVENCIÓN IDOR)
+### ==============================================================================
+
+### 5.1 Piloto 1 edita su propia mecha (Esperado: 200 OK)
+PUT {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Titán Némesis Mk-II",
+  "clase": "Asalto",
+  "potencia": 98,
+  "blindaje": 90,
+  "velocidad": 65
+}
+
+### 5.2 [SEGURIDAD] Piloto 2 intenta editar la mecha de Piloto 1 (Esperado: 403 Forbidden)
+PUT {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto2}}
+Content-Type: application/json
+
+{
+  "nombre": "Mecha Hackeada por Piloto 2",
+  "clase": "Sigilo",
+  "potencia": 1,
+  "blindaje": 1,
+  "velocidad": 1
+}
+
+
+### ==============================================================================
+### 6. TICKET 4 - ELIMINAR MECHA (CONTROL DE PROPIEDAD ANTES DE BORRAR)
+### ==============================================================================
+
+### 6.1 [SEGURIDAD] Piloto 2 intenta desmantelar la mecha de Piloto 1 (Esperado: 403 Forbidden)
+DELETE {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto2}}
+
+
+### ==============================================================================
+### 7. TICKET 5 - CONTROL DE ACCESO BASADO EN ROLES (/mechas/todas)
+### ==============================================================================
+
+### 7.1 Piloto con rol 'piloto' intenta ver toda la flota (Esperado: 403 Forbidden)
+GET {{baseUrl}}/mechas/todas
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ------------------------------------------------------------------------------
+### INSTRUCCIÓN PARA PROBAR EL ROL DE COMANDANTE:
+### Para ascender a un piloto al rango de 'comandante', ejecuta este comando en el
+### SQL Editor de Supabase o cambia el campo 'rol' a 'comandante' en Table Editor:
+###
+### UPDATE pilotos SET rol = 'comandante' WHERE correo = 'valquiria@hangar.space';
+###
+### Luego, vuelve a iniciar sesión con Piloto 1 (Paso 1.2) para regenerar el token JWT
+### con el nuevo rol: { id, nombre, rol: "comandante" }.
+### ------------------------------------------------------------------------------
+
+### 7.2 Comandante consulta toda la flota global (Esperado: 200 OK con mechas de todos los pilotos)
+### (Ejecutar después de ascender al usuario en Supabase y hacer re-login)
+GET {{baseUrl}}/mechas/todas
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ==============================================================================
+### 8. TICKET 4 - ELIMINAR MECHA PROPIA (CIERRE DE CICLO DE VIDA)
+### ==============================================================================
+
+### 8.1 Piloto 1 desmantela su propia mecha (Esperado: 200 OK)
+DELETE {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto1}}
+
+### 8.2 Verificar que la mecha ya no aparece en el hangar de Piloto 1 (Esperado: 200 OK)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}

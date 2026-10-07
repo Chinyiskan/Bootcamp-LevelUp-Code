@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso al Hangar | LevelUp Code</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body>
+
+  <header class="barra-navegacion">
+    <div class="logo-hangar">
+      <svg class="icono icono-lg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>HANGAR DE MECHAS :: ACCESO</span>
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+    <div class="contenedor-auth">
+      <div class="auth-header">
+        <h1>Identificación de Piloto</h1>
+        <p>Ingresa tus credenciales para acceder a tu hangar privado</p>
+      </div>
+
+      <div id="mensajeAlerta" style="display: none;"></div>
+
+      <form id="formularioLogin" class="formulario-grid" style="grid-template-columns: 1fr;">
+        <div class="grupo-campo">
+          <label for="correo">Correo del Piloto</label>
+          <input type="email" id="correo" class="campo-input" placeholder="piloto@hangar.space" required autocomplete="email">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="clave">Código de Seguridad (Contraseña)</label>
+          <input type="password" id="clave" class="campo-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="btnIngresar" class="btn btn-primario" style="margin-top: 0.5rem;">
+          Autenticar y Entrar al Hangar
+        </button>
+      </form>
+
+      <div class="auth-enlace">
+        ¿Aún no tienes registro de piloto? <a href="./registro.html">Solicitar ingreso aquí</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="./js/login.js"></script>
+</body>
+</html>

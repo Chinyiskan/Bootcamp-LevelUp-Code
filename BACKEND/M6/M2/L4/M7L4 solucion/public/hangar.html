@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal del Hangar | LevelUp Code</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body>
+
+  <!-- Barra Superior de Mando -->
+  <header class="barra-navegacion">
+    <div class="logo-hangar">
+      <svg class="icono icono-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+      <span>HANGAR DE MECHAS :: TERMINAL TÁCTICA</span>
+    </div>
+
+    <div class="perfil-usuario">
+      <span id="distintivoPiloto" style="font-weight: 600;">Cargando piloto...</span>
+      <span id="insigniaRol" class="insignia-rol rol-piloto">PILOTO</span>
+      <button id="btnCerrarSesion" class="btn btn-secundario" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+        Cerrar Sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+
+    <!-- Mensajes y Alertas Globales -->
+    <div id="alertaGlobal" style="display: none;"></div>
+
+    <!-- Barra de Acciones y Vistas Especiales -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <h2 id="tituloVistaActual" style="font-size: 1.5rem;">Mis Unidades de Combate</h2>
+      
+      <div id="contenedorBotonComandante" style="display: none;">
+        <button id="btnVerTodaFlota" class="btn btn-comandante">
+          <svg class="icono" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Ver Hangar Completo (Comandante)</span>
+        </button>
+        <button id="btnVerMisMechas" class="btn btn-secundario" style="display: none;">
+          <svg class="icono" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Volver a Mis Mechas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de Construcción y Despliegue de Mechas -->
+    <section id="panelDespliegue" class="seccion-panel">
+      <h3 class="titulo-seccion">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="icono" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Desplegar Nueva Unidad Mecha</span>
+        </span>
+      </h3>
+
+      <form id="formularioCrearMecha" class="formulario-grid">
+        <div class="grupo-campo">
+          <label for="nombreMecha">Nombre de la Unidad</label>
+          <input type="text" id="nombreMecha" class="campo-input" placeholder="Ej: Titán Némesis" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="claseMecha">Clase Táctica</label>
+          <select id="claseMecha" class="campo-select" required>
+            <option value="Asalto">Asalto — Ofensiva Pesada</option>
+            <option value="Brawler">Brawler — Combate Cuerpo a Cuerpo</option>
+            <option value="Sigilo">Sigilo — Infiltración Furtiva</option>
+            <option value="Sniper">Sniper — Disparo de Precisión</option>
+            <option value="Soporte">Soporte — Escudos y Defensa</option>
+          </select>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="potenciaMecha">Potencia (1 - 100)</label>
+          <input type="number" id="potenciaMecha" class="campo-input" min="1" max="100" value="75" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="blindajeMecha">Blindaje (1 - 100)</label>
+          <input type="number" id="blindajeMecha" class="campo-input" min="1" max="100" value="80" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="velocidadMecha">Velocidad (1 - 100)</label>
+          <input type="number" id="velocidadMecha" class="campo-input" min="1" max="100" value="65" required>
+        </div>
+
+        <div class="grupo-campo" style="justify-content: flex-end;">
+          <button type="submit" class="btn btn-primario" style="height: 40px; margin-top: auto;">
+            <svg class="icono" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Construir y Desplegar</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Galería de Unidades Mechas -->
+    <section>
+      <div id="gridMechas" class="grid-mechas">
+        <!-- Renderizado dinámico desde hangar.js -->
+      </div>
+      <div id="mensajeVacio" style="display: none; text-align: center; padding: 3rem; color: var(--texto-secundario);">
+        No hay unidades registradas en este sector del hangar.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Reconfigurar / Editar Mecha -->
+  <div id="modalEditar" class="modal-overlay" style="display: none;">
+    <div class="modal-contenido">
+      <h3 class="titulo-seccion">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="icono" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Reconfigurar Mecha</span>
+        </span>
+      </h3>
+
+      <form id="formularioEditarMecha" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="editarIdMecha">
+
+        <div class="grupo-campo">
+          <label for="editarNombre">Nombre de la Unidad</label>
+          <input type="text" id="editarNombre" class="campo-input" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarClase">Clase Táctica</label>
+          <select id="editarClase" class="campo-select" required>
+            <option value="Asalto">Asalto — Ofensiva Pesada</option>
+            <option value="Brawler">Brawler — Combate Cuerpo a Cuerpo</option>
+            <option value="Sigilo">Sigilo — Infiltración Furtiva</option>
+            <option value="Sniper">Sniper — Disparo de Precisión</option>
+            <option value="Soporte">Soporte — Escudos y Defensa</option>
+          </select>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarPotencia">Potencia (1 - 100)</label>
+          <input type="number" id="editarPotencia" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarBlindaje">Blindaje (1 - 100)</label>
+          <input type="number" id="editarBlindaje" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarVelocidad">Velocidad (1 - 100)</label>
+          <input type="number" id="editarVelocidad" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" id="btnCancelarEdicion" class="btn btn-secundario">Cancelar</button>
+          <button type="submit" class="btn btn-primario">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="./js/hangar.js"></script>
+</body>
+</html>

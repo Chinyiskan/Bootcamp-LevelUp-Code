@@ -1,0 +1,579 @@
+/* Responsabilidad: Hoja de estilos con estética oscura y temática de terminal táctica para el Hangar de Mechas */
+
+:root {
+  --bg-principal: #0b0f19;
+  --bg-tarjeta: #111827;
+  --bg-tarjeta-alt: #162032;
+  --borde-base: #1f293d;
+  --texto-principal: #f1f5f9;
+  --texto-secundario: #94a3b8;
+  
+  /* Clases tácticas de Mechas */
+  --color-asalto: #ef4444;   /* Rojo combate ofensivo */
+  --color-brawler: #10b981;  /* Verde combate cuerpo a cuerpo / luchador */
+  --color-sigilo: #a855f7;   /* Morado infiltración furtiva */
+  --color-sniper: #eab308;   /* Amarillo mira de precisión */
+  --color-soporte: #3b82f6;  /* Azul defensa y escudos */
+  
+  /* Acentos de interfaz */
+  --color-acento: #06b6d4;   /* Cyan holográfico */
+  --color-exito: #10b981;    /* Verde terminal */
+  --color-peligro: #f43f5e;  /* Carmesí alerta */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-principal);
+  color: var(--texto-principal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezado Táctico */
+.barra-navegacion {
+  background: var(--bg-tarjeta);
+  border-bottom: 1px solid var(--borde-base);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo-hangar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-acento);
+}
+
+/* Iconos SVG Vectoriales Tácticos */
+.icono {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: inline-block;
+  vertical-align: middle;
+  stroke-width: 2;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.icono-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.icono-sm {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.perfil-usuario {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.insignia-rol {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rol-piloto {
+  background: #1e293b;
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
+}
+
+.rol-comandante {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid #ef4444;
+}
+
+/* Contenedor Principal */
+.contenedor-principal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* Paneles y Secciones */
+.seccion-panel {
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.titulo-seccion {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--texto-principal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--borde-base);
+  padding-bottom: 0.5rem;
+}
+
+/* Formularios */
+.formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grupo-campo label {
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+  font-weight: 500;
+}
+
+.campo-input, .campo-select {
+  background: var(--bg-principal);
+  border: 1px solid var(--borde-base);
+  color: var(--texto-principal);
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo-input:focus, .campo-select:focus {
+  border-color: var(--color-acento);
+}
+
+/* Botones */
+.btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primario {
+  background: var(--color-acento);
+  color: #041014;
+}
+
+.btn-primario:hover {
+  background: #22d3ee;
+}
+
+.btn-peligro {
+  background: transparent;
+  color: var(--color-peligro);
+  border: 1px solid var(--color-peligro);
+}
+
+.btn-peligro:hover {
+  background: var(--color-peligro);
+  color: #fff;
+}
+
+.btn-secundario {
+  background: #1e293b;
+  color: var(--texto-principal);
+  border: 1px solid var(--borde-base);
+}
+
+.btn-secundario:hover {
+  background: #334155;
+}
+
+.btn-comandante {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid var(--color-asalto);
+}
+
+.btn-comandante:hover {
+  background: var(--color-asalto);
+  color: #fff;
+}
+
+/* Galería de Mechas: Cartas Verticales 3D Flip */
+.grid-mechas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 2rem;
+  perspective: 1500px;
+}
+
+/* Contenedor del efecto Flip 3D */
+.contenedor-tarjeta-flip {
+  background-color: transparent;
+  height: 490px;
+  perspective: 1200px;
+}
+
+.tarjeta-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+  border-radius: 12px;
+}
+
+/* Al hacer hover sobre el contenedor, la tarjeta gira 180 grados mostrando el reverso */
+.contenedor-tarjeta-flip:hover .tarjeta-flip-inner,
+.contenedor-tarjeta-flip:focus-within .tarjeta-flip-inner,
+.tarjeta-flip-inner.girada {
+  transform: rotateY(180deg);
+}
+
+/* Caras común de la tarjeta */
+.tarjeta-cara {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 2px solid var(--borde-base);
+  background: var(--bg-tarjeta-alt);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Bordes y Resplandor según Clase Táctica */
+.clase-Asalto .tarjeta-cara {
+  border-color: var(--color-asalto);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+}
+
+.clase-Brawler .tarjeta-cara {
+  border-color: var(--color-brawler);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+}
+
+.clase-Sigilo .tarjeta-cara {
+  border-color: var(--color-sigilo);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+}
+
+.clase-Sniper .tarjeta-cara {
+  border-color: var(--color-sniper);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.25);
+}
+
+.clase-Soporte .tarjeta-cara {
+  border-color: var(--color-soporte);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+}
+
+/* Etiquetas de Clase Táctica */
+.etiqueta-clase {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.etiqueta-Asalto { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid var(--color-asalto); }
+.etiqueta-Brawler { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid var(--color-brawler); }
+.etiqueta-Sigilo { background: rgba(168, 85, 247, 0.25); color: #d8b4fe; border: 1px solid var(--color-sigilo); }
+.etiqueta-Sniper { background: rgba(234, 179, 8, 0.25); color: #fef08a; border: 1px solid var(--color-sniper); }
+.etiqueta-Soporte { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid var(--color-soporte); }
+
+/* Cara Frontal */
+.tarjeta-frontal {
+  transform: rotateY(0deg);
+}
+
+.tarjeta-imagen-wrapper {
+  position: relative;
+  width: 100%;
+  height: 335px;
+  background: radial-gradient(circle at center, #1e293b 0%, #080c14 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagen-mecha {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s ease;
+}
+
+.contenedor-tarjeta-flip:hover .imagen-mecha {
+  transform: scale(1.06);
+}
+
+.overlay-gradiente {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(11,15,25,0.85) 100%);
+  pointer-events: none;
+}
+
+.badge-clase-frontal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tarjeta-info-frontal {
+  padding: 1.15rem;
+  background: var(--bg-tarjeta);
+  border-top: 1px solid var(--borde-base);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nombre-mecha {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indicador-flip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--color-acento);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* Cara Trasera (Reverso: Stats y Acciones) */
+.tarjeta-trasera {
+  transform: rotateY(180deg);
+  padding: 1.5rem;
+  background: linear-gradient(180deg, #131b2c 0%, #0b0f19 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cabecera-trasera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--borde-base);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.nombre-mecha-trasero {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--texto-principal);
+  margin-top: 0.25rem;
+}
+
+.badge-hud {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
+}
+
+/* Barras de Atributos en el Reverso */
+.lista-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.fila-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.etiquetas-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+}
+
+.stat-valor {
+  font-weight: 700;
+  color: var(--texto-principal);
+}
+
+.barra-fondo {
+  background: #090d16;
+  height: 7px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.barra-progreso {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-acento);
+}
+
+.acciones-tarjeta {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--borde-base);
+  padding-top: 0.85rem;
+}
+
+.piloto-propietario {
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--borde-base);
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-contenido {
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  padding: 1.5rem;
+}
+
+/* Vistas de Login y Registro */
+.contenedor-auth {
+  max-width: 420px;
+  margin: 4rem auto;
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-header h1 {
+  font-size: 1.5rem;
+  color: var(--color-acento);
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}
+
+.auth-enlace {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
+
+.auth-enlace a {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-enlace a:hover {
+  text-decoration: underline;
+}
+
+.alerta {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.alerta-error {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid var(--color-peligro);
+  color: #fda4af;
+}
+
+.alerta-exito {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--color-exito);
+  color: #6ee7b7;
+}

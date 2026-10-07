@@ -1,0 +1,31 @@
+{
+  "name": "m7l4-hangar-mechas",
+  "version": "1.0.0",
+  "description": "Hangar de Mechas - Control de Acceso y Autorización en Express con Supabase y JWT",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "express",
+    "supabase",
+    "jwt",
+    "bcryptjs",
+    "authorization",
+    "rbac",
+    "mechas",
+    "levelup-code"
+  ],
+  "author": "LevelUp Code",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

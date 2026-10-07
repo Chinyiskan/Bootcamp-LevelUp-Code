@@ -1,0 +1,2504 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+config/
+  supabaseClient.js
+controllers/
+  auth.controller.js
+  mechas.controller.js
+middlewares/
+  verificarPase.js
+public/
+  css/
+    estilo.css
+  images/
+    asalto.webp
+    brawler.webp
+    sigilo.webp
+    sniper.webp
+    soporte.webp
+  js/
+    hangar.js
+    login.js
+    registro.js
+  hangar.html
+  login.html
+  registro.html
+routes/
+  auth.routes.js
+  mechas.routes.js
+.env.example
+.gitignore
+package.json
+README.md
+server.js
+test.http
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="config/supabaseClient.js">
+// Responsabilidad: Inicializar y exportar el cliente de Supabase para interactuar con la base de datos PostgreSQL.
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { createClient } from '@supabase/supabase-js';
+
+// Usamos variables de entorno para evitar filtrar credenciales en el control de versiones
+let supabaseUrl = process.env.SUPABASE_URL;
+// Nomenclatura nueva de Supabase: secret key para operaciones del backend sin restricciones de RLS
+let supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('ADVERTENCIA: SUPABASE_URL o SUPABASE_SECRET_KEY no están configuradas en el archivo .env');
+}
+
+// Creamos un cliente único reutilizable con fallback seguro para no romper la ejecución si aún no se configura .env
+let supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseKey || 'placeholder_secret');
+
+export default supabase;
+</file>
+
+<file path="controllers/auth.controller.js">
+// Responsabilidad: Gestionar el registro de pilotos, la autenticación mediante contraseñas cifradas y la emisión de tokens JWT.
+
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import supabase from '../config/supabaseClient.js';
+
+// Controlador para dar de alta un nuevo piloto en el sistema del hangar
+export let registrarPiloto = async (req, res) => {
+  let { nombre, correo, clave } = req.body;
+
+  // Validación temprana para no procesar datos incompletos en el servidor
+  if (!nombre || !correo || !clave) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios (nombre, correo, clave)' });
+  }
+
+  try {
+    // Verificamos si el correo ya está en uso para evitar duplicados en la base de datos
+    // TICKET 6
+    // Usamos select explícito para nunca traer campos confidenciales innecesarios
+    let { data: pilotoExistente } = await supabase
+      .from('pilotos')
+      .select('id, nombre, correo, rol')
+      .eq('correo', correo.toLowerCase().trim())
+      .single();
+
+    if (pilotoExistente) {
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado por otro piloto' });
+    }
+
+    // Ciframos la contraseña con salting (factor de costo 10) para proteger la identidad del usuario ante filtraciones
+    let claveHasheada = await bcrypt.hash(clave, 10);
+
+    // Todo piloto nuevo inicia con el rango básico de "piloto" por principio de menor privilegio
+    // TICKET 6
+    // Explicitamos las columnas a retornar para no devolver el hash de la clave bajo ninguna circunstancia
+    let { data: nuevoPiloto, error: errorInsertar } = await supabase
+      .from('pilotos')
+      .insert([
+        {
+          nombre: nombre.trim(),
+          correo: correo.toLowerCase().trim(),
+          clave: claveHasheada,
+          rol: 'piloto'
+        }
+      ])
+      .select('id, nombre, correo, rol')
+      .single();
+
+    if (errorInsertar) {
+      return res.status(500).json({ error: 'Error al registrar al piloto en la base de datos' });
+    }
+
+    return res.status(201).json({
+      mensaje: 'Piloto registrado exitosamente en el hangar',
+      piloto: nuevoPiloto
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al procesar el registro' });
+  }
+};
+
+// Controlador para autenticar credenciales y generar el pase de acceso (JWT)
+export let iniciarSesion = async (req, res) => {
+  let { correo, clave } = req.body;
+
+  if (!correo || !clave) {
+    return res.status(400).json({ error: 'Se requiere correo y clave para ingresar al hangar' });
+  }
+
+  try {
+    // Obtenemos únicamente las columnas necesarias para validar la autenticación y emitir el payload del token
+    let { data: piloto, error: errorConsulta } = await supabase
+      .from('pilotos')
+      .select('id, nombre, correo, clave, rol')
+      .eq('correo', correo.toLowerCase().trim())
+      .single();
+
+    // Mensaje de error genérico para no filtrar si el correo existe o no en el sistema (evita enumeración de usuarios)
+    if (errorConsulta || !piloto) {
+      return res.status(401).json({ error: 'Credenciales inválidas: correo o clave incorrectos' });
+    }
+
+    // Comparamos el texto plano con el hash almacenado usando tiempo constante para prevenir ataques de temporización
+    let claveValida = await bcrypt.compare(clave, piloto.clave);
+    if (!claveValida) {
+      return res.status(401).json({ error: 'Credenciales inválidas: correo o clave incorrectos' });
+    }
+
+    // Incluimos en el payload los datos esenciales que requerirán los middlewares de autorización
+    let payload = {
+      id: piloto.id,
+      nombre: piloto.nombre,
+      rol: piloto.rol
+    };
+
+    // Firmamos el token con una expiración de 24h para limitar la ventana de exposición en caso de robo del token
+    let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    return res.status(200).json({
+      mensaje: 'Autenticación exitosa. Bienvenido al Hangar.',
+      token,
+      piloto: {
+        id: piloto.id,
+        nombre: piloto.nombre,
+        correo: piloto.correo,
+        rol: piloto.rol
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al iniciar sesión' });
+  }
+};
+
+// Controlador para consultar el perfil del piloto autenticado
+export let obtenerPerfil = async (req, res) => {
+  try {
+    // TICKET 6
+    // Consultamos el registro del piloto garantizando que el campo 'clave' nunca viaje hacia el cliente
+    let { data: piloto, error } = await supabase
+      .from('pilotos')
+      .select('id, nombre, correo, rol')
+      .eq('id', req.piloto.id)
+      .single();
+
+    if (error || !piloto) {
+      return res.status(404).json({ error: 'Piloto no encontrado en el sistema' });
+    }
+
+    return res.status(200).json({ piloto });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al consultar la información del piloto' });
+  }
+};
+</file>
+
+<file path="controllers/mechas.controller.js">
+// Responsabilidad: Gestionar el CRUD de unidades mechas y aplicar las reglas de autorización por propiedad y por rol.
+
+import supabase from '../config/supabaseClient.js';
+
+// TICKET 1
+// Crear una nueva mecha asignando la propiedad obligatoriamente al piloto autenticado
+export let crearMecha = async (req, res) => {
+  let { nombre, clase, potencia, blindaje, velocidad } = req.body;
+
+  // Validamos que los datos indispensables vengan en la petición
+  if (!nombre || !clase || potencia === undefined || blindaje === undefined || velocidad === undefined) {
+    return res.status(400).json({
+      error: 'Datos incompletos: se requiere nombre, clase, potencia, blindaje y velocidad'
+    });
+  }
+
+  // Restringimos las clases permitidas para mantener la consistencia del hangar
+  let clasesValidas = ['Asalto', 'Brawler', 'Sigilo', 'Sniper', 'Soporte'];
+  if (!clasesValidas.includes(clase)) {
+    return res.status(400).json({
+      error: 'Clase inválida. Las clases permitidas son: Asalto, Brawler, Sigilo, Sniper o Soporte'
+    });
+  }
+
+  // Convertimos a enteros y validamos el rango operacional 1-100
+  let pot = parseInt(potencia);
+  let bli = parseInt(blindaje);
+  let vel = parseInt(velocidad);
+
+  if (isNaN(pot) || isNaN(bli) || isNaN(vel) || pot < 1 || pot > 100 || bli < 1 || bli > 100 || vel < 1 || vel > 100) {
+    return res.status(400).json({
+      error: 'Las estadísticas (potencia, blindaje, velocidad) deben ser números enteros entre 1 y 100'
+    });
+  }
+
+  try {
+    // Por regla estricta de seguridad, el piloto_id SIEMPRE se extrae de req.piloto.id (token verificado)
+    // Jamás confiamos en un ID enviado en req.body para evitar vulnerabilidades de asignación masiva o suplantación
+    let { data: nuevaMecha, error } = await supabase
+      .from('mechas')
+      .insert([
+        {
+          piloto_id: req.piloto.id,
+          nombre: nombre.trim(),
+          clase,
+          potencia: pot,
+          blindaje: bli,
+          velocidad: vel
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Error al registrar la mecha en la base de datos' });
+    }
+
+    return res.status(201).json({
+      mensaje: 'Mecha construida y desplegada en tu hangar',
+      mecha: nuevaMecha
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al crear la mecha' });
+  }
+};
+
+// TICKET 2
+// Listar únicamente las mechas que pertenecen al piloto que inició sesión
+export let listarMisMechas = async (req, res) => {
+  try {
+    // Aislamos los datos a nivel de consulta: el filtro se aplica con el ID del token verificado
+    let { data: mechas, error } = await supabase
+      .from('mechas')
+      .select('*')
+      .eq('piloto_id', req.piloto.id)
+      .order('id', { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ error: 'Error al consultar las mechas de tu hangar' });
+    }
+
+    return res.status(200).json({
+      total: mechas.length,
+      mechas
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al obtener tus mechas' });
+  }
+};
+
+// TICKET 3
+// Modificar una mecha previa verificación estricta de propiedad
+export let actualizarMecha = async (req, res) => {
+  let { id } = req.params;
+  let { nombre, clase, potencia, blindaje, velocidad } = req.body;
+
+  try {
+    // Paso 1: Consultamos la mecha existente para verificar quién es su legítimo dueño
+    let { data: mecha, error: errorBusqueda } = await supabase
+      .from('mechas')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    // Si el registro no existe o pertenece a otro piloto, emitimos el mismo error 403 genérico
+    // Esto evita que un atacante descubra qué IDs existen en la base de datos (prevención de enumeración de recursos)
+    if (errorBusqueda || !mecha || String(mecha.piloto_id) !== String(req.piloto.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para modificar esta mecha' });
+    }
+
+    // Paso 2: Construimos los datos a actualizar validando campos presentes
+    let datosActualizar = {};
+
+    if (nombre !== undefined) datosActualizar.nombre = nombre.trim();
+    if (clase !== undefined) {
+      let clasesValidas = ['Asalto', 'Brawler', 'Sigilo', 'Sniper', 'Soporte'];
+      if (!clasesValidas.includes(clase)) {
+        return res.status(400).json({ error: 'Clase inválida. Opciones: Asalto, Brawler, Sigilo, Sniper o Soporte' });
+      }
+      datosActualizar.clase = clase;
+    }
+
+    if (potencia !== undefined) {
+      let pot = parseInt(potencia);
+      if (isNaN(pot) || pot < 1 || pot > 100) {
+        return res.status(400).json({ error: 'Potencia debe ser un número entero entre 1 y 100' });
+      }
+      datosActualizar.potencia = pot;
+    }
+
+    if (blindaje !== undefined) {
+      let bli = parseInt(blindaje);
+      if (isNaN(bli) || bli < 1 || bli > 100) {
+        return res.status(400).json({ error: 'Blindaje debe ser un número entero entre 1 y 100' });
+      }
+      datosActualizar.blindaje = bli;
+    }
+
+    if (velocidad !== undefined) {
+      let vel = parseInt(velocidad);
+      if (isNaN(vel) || vel < 1 || vel > 100) {
+        return res.status(400).json({ error: 'Velocidad debe ser un número entero entre 1 y 100' });
+      }
+      datosActualizar.velocidad = vel;
+    }
+
+    // Paso 3: Ejecutamos el update solo tras haber superado la validación de propiedad
+    let { data: mechaActualizada, error: errorUpdate } = await supabase
+      .from('mechas')
+      .update(datosActualizar)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (errorUpdate) {
+      return res.status(500).json({ error: 'Error al actualizar los componentes de la mecha' });
+    }
+
+    return res.status(200).json({
+      mensaje: 'Mecha reconfigurada exitosamente en tu hangar',
+      mecha: mechaActualizada
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al actualizar la mecha' });
+  }
+};
+
+// TICKET 4
+// Desmantelar (eliminar) una mecha previa verificación estricta de propiedad
+export let eliminarMecha = async (req, res) => {
+  let { id } = req.params;
+
+  try {
+    // Paso 1: Consultamos la mecha en la base de datos para inspeccionar el campo piloto_id
+    let { data: mecha, error: errorBusqueda } = await supabase
+      .from('mechas')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    // Verificamos propiedad: si no existe o el dueño no coincide con el token, rechazamos con 403
+    if (errorBusqueda || !mecha || String(mecha.piloto_id) !== String(req.piloto.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para desmantelar esta mecha' });
+    }
+
+    // Paso 2: Ejecutamos la eliminación de forma segura
+    let { error: errorDelete } = await supabase
+      .from('mechas')
+      .delete()
+      .eq('id', id);
+
+    if (errorDelete) {
+      return res.status(500).json({ error: 'Error al desmantelar la mecha de la base de datos' });
+    }
+
+    return res.status(200).json({
+      mensaje: 'Mecha desmantelada exitosamente de tu hangar'
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al eliminar la mecha' });
+  }
+};
+
+// TICKET 5
+// Listar todas las mechas de la base estelar (acceso reservado exclusivamente al comandante)
+export let listarTodasMechas = async (req, res) => {
+  try {
+    // Control de acceso basado en roles (RBAC): solo un piloto con rol "comandante" puede supervisar toda la flota
+    if (req.piloto.rol !== 'comandante') {
+      return res.status(403).json({
+        error: 'Acceso restringido: se requiere rango de Comandante para ver la flota completa'
+      });
+    }
+
+    // TICKET 6
+    // Al traer información del piloto asociado a cada mecha, explicitamos columnas seguras sin exponer la clave
+    let { data: todasLasMechas, error } = await supabase
+      .from('mechas')
+      .select(`
+        id,
+        piloto_id,
+        nombre,
+        clase,
+        potencia,
+        blindaje,
+        velocidad,
+        pilotos:piloto_id (
+          id,
+          nombre,
+          correo,
+          rol
+        )
+      `)
+      .order('id', { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ error: 'Error al consultar la flota global de mechas' });
+    }
+
+    return res.status(200).json({
+      total: todasLasMechas.length,
+      flota: todasLasMechas
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor al listar la flota completa' });
+  }
+};
+</file>
+
+<file path="middlewares/verificarPase.js">
+// Responsabilidad: Interceptar las solicitudes entrantes y autenticar al piloto mediante la validación de su token JWT.
+
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+
+let verificarPase = (req, res, next) => {
+  // El encabezado Authorization es el estándar HTTP para transportar credenciales de portador (Bearer)
+  let cabeceraAutorizacion = req.headers.authorization;
+
+  if (!cabeceraAutorizacion) {
+    // 401 Unauthorized: El cliente no ha presentado credenciales válidas para ingresar al hangar
+    return res.status(401).json({
+      error: 'Acceso denegado: se requiere un pase de abordaje (token de autorización)'
+    });
+  }
+
+  // Separamos la palabra clave 'Bearer' del valor real del token criptográfico
+  let partes = cabeceraAutorizacion.split(' ');
+  if (partes.length !== 2 || partes[0] !== 'Bearer') {
+    return res.status(401).json({
+      error: 'Formato de autorización inválido. Debe ser: Bearer <token>'
+    });
+  }
+
+  let token = partes[1];
+  let secretoJwt = process.env.JWT_SECRET;
+
+  try {
+    // Verificamos la firma criptográfica con la clave secreta del servidor para garantizar que no fue alterado
+    let datosDecodificados = jwt.verify(token, secretoJwt);
+
+    // Inyectamos los datos del piloto en el objeto req para que los controladores conozcan la identidad verificada
+    req.piloto = {
+      id: datosDecodificados.id,
+      nombre: datosDecodificados.nombre,
+      rol: datosDecodificados.rol
+    };
+
+    next();
+  } catch (error) {
+    // Si el token expiró o la firma no coincide con nuestro secreto, rechazamos la conexión
+    return res.status(401).json({
+      error: 'Pase de abordaje inválido o expirado. Inicia sesión nuevamente.'
+    });
+  }
+};
+
+export default verificarPase;
+</file>
+
+<file path="public/css/estilo.css">
+/* Responsabilidad: Hoja de estilos con estética oscura y temática de terminal táctica para el Hangar de Mechas */
+
+:root {
+  --bg-principal: #0b0f19;
+  --bg-tarjeta: #111827;
+  --bg-tarjeta-alt: #162032;
+  --borde-base: #1f293d;
+  --texto-principal: #f1f5f9;
+  --texto-secundario: #94a3b8;
+  
+  /* Clases tácticas de Mechas */
+  --color-asalto: #ef4444;   /* Rojo combate ofensivo */
+  --color-brawler: #10b981;  /* Verde combate cuerpo a cuerpo / luchador */
+  --color-sigilo: #a855f7;   /* Morado infiltración furtiva */
+  --color-sniper: #eab308;   /* Amarillo mira de precisión */
+  --color-soporte: #3b82f6;  /* Azul defensa y escudos */
+  
+  /* Acentos de interfaz */
+  --color-acento: #06b6d4;   /* Cyan holográfico */
+  --color-exito: #10b981;    /* Verde terminal */
+  --color-peligro: #f43f5e;  /* Carmesí alerta */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-principal);
+  color: var(--texto-principal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezado Táctico */
+.barra-navegacion {
+  background: var(--bg-tarjeta);
+  border-bottom: 1px solid var(--borde-base);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo-hangar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-acento);
+}
+
+/* Iconos SVG Vectoriales Tácticos */
+.icono {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: inline-block;
+  vertical-align: middle;
+  stroke-width: 2;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.icono-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.icono-sm {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.perfil-usuario {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.insignia-rol {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rol-piloto {
+  background: #1e293b;
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
+}
+
+.rol-comandante {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid #ef4444;
+}
+
+/* Contenedor Principal */
+.contenedor-principal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* Paneles y Secciones */
+.seccion-panel {
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.titulo-seccion {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--texto-principal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--borde-base);
+  padding-bottom: 0.5rem;
+}
+
+/* Formularios */
+.formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grupo-campo label {
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+  font-weight: 500;
+}
+
+.campo-input, .campo-select {
+  background: var(--bg-principal);
+  border: 1px solid var(--borde-base);
+  color: var(--texto-principal);
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo-input:focus, .campo-select:focus {
+  border-color: var(--color-acento);
+}
+
+/* Botones */
+.btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primario {
+  background: var(--color-acento);
+  color: #041014;
+}
+
+.btn-primario:hover {
+  background: #22d3ee;
+}
+
+.btn-peligro {
+  background: transparent;
+  color: var(--color-peligro);
+  border: 1px solid var(--color-peligro);
+}
+
+.btn-peligro:hover {
+  background: var(--color-peligro);
+  color: #fff;
+}
+
+.btn-secundario {
+  background: #1e293b;
+  color: var(--texto-principal);
+  border: 1px solid var(--borde-base);
+}
+
+.btn-secundario:hover {
+  background: #334155;
+}
+
+.btn-comandante {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid var(--color-asalto);
+}
+
+.btn-comandante:hover {
+  background: var(--color-asalto);
+  color: #fff;
+}
+
+/* Galería de Mechas: Cartas Verticales 3D Flip */
+.grid-mechas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 2rem;
+  perspective: 1500px;
+}
+
+/* Contenedor del efecto Flip 3D */
+.contenedor-tarjeta-flip {
+  background-color: transparent;
+  height: 490px;
+  perspective: 1200px;
+}
+
+.tarjeta-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+  border-radius: 12px;
+}
+
+/* Al hacer hover sobre el contenedor, la tarjeta gira 180 grados mostrando el reverso */
+.contenedor-tarjeta-flip:hover .tarjeta-flip-inner,
+.contenedor-tarjeta-flip:focus-within .tarjeta-flip-inner,
+.tarjeta-flip-inner.girada {
+  transform: rotateY(180deg);
+}
+
+/* Caras común de la tarjeta */
+.tarjeta-cara {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 2px solid var(--borde-base);
+  background: var(--bg-tarjeta-alt);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Bordes y Resplandor según Clase Táctica */
+.clase-Asalto .tarjeta-cara {
+  border-color: var(--color-asalto);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+}
+
+.clase-Brawler .tarjeta-cara {
+  border-color: var(--color-brawler);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+}
+
+.clase-Sigilo .tarjeta-cara {
+  border-color: var(--color-sigilo);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+}
+
+.clase-Sniper .tarjeta-cara {
+  border-color: var(--color-sniper);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.25);
+}
+
+.clase-Soporte .tarjeta-cara {
+  border-color: var(--color-soporte);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+}
+
+/* Etiquetas de Clase Táctica */
+.etiqueta-clase {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.etiqueta-Asalto { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid var(--color-asalto); }
+.etiqueta-Brawler { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid var(--color-brawler); }
+.etiqueta-Sigilo { background: rgba(168, 85, 247, 0.25); color: #d8b4fe; border: 1px solid var(--color-sigilo); }
+.etiqueta-Sniper { background: rgba(234, 179, 8, 0.25); color: #fef08a; border: 1px solid var(--color-sniper); }
+.etiqueta-Soporte { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid var(--color-soporte); }
+
+/* Cara Frontal */
+.tarjeta-frontal {
+  transform: rotateY(0deg);
+}
+
+.tarjeta-imagen-wrapper {
+  position: relative;
+  width: 100%;
+  height: 335px;
+  background: radial-gradient(circle at center, #1e293b 0%, #080c14 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagen-mecha {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s ease;
+}
+
+.contenedor-tarjeta-flip:hover .imagen-mecha {
+  transform: scale(1.06);
+}
+
+.overlay-gradiente {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(11,15,25,0.85) 100%);
+  pointer-events: none;
+}
+
+.badge-clase-frontal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tarjeta-info-frontal {
+  padding: 1.15rem;
+  background: var(--bg-tarjeta);
+  border-top: 1px solid var(--borde-base);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nombre-mecha {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indicador-flip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--color-acento);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* Cara Trasera (Reverso: Stats y Acciones) */
+.tarjeta-trasera {
+  transform: rotateY(180deg);
+  padding: 1.5rem;
+  background: linear-gradient(180deg, #131b2c 0%, #0b0f19 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cabecera-trasera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--borde-base);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.nombre-mecha-trasero {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--texto-principal);
+  margin-top: 0.25rem;
+}
+
+.badge-hud {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
+}
+
+/* Barras de Atributos en el Reverso */
+.lista-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.fila-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.etiquetas-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+}
+
+.stat-valor {
+  font-weight: 700;
+  color: var(--texto-principal);
+}
+
+.barra-fondo {
+  background: #090d16;
+  height: 7px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.barra-progreso {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-acento);
+}
+
+.acciones-tarjeta {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--borde-base);
+  padding-top: 0.85rem;
+}
+
+.piloto-propietario {
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--borde-base);
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-contenido {
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  padding: 1.5rem;
+}
+
+/* Vistas de Login y Registro */
+.contenedor-auth {
+  max-width: 420px;
+  margin: 4rem auto;
+  background: var(--bg-tarjeta);
+  border: 1px solid var(--borde-base);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-header h1 {
+  font-size: 1.5rem;
+  color: var(--color-acento);
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}
+
+.auth-enlace {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
+
+.auth-enlace a {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-enlace a:hover {
+  text-decoration: underline;
+}
+
+.alerta {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.alerta-error {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid var(--color-peligro);
+  color: #fda4af;
+}
+
+.alerta-exito {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--color-exito);
+  color: #6ee7b7;
+}
+</file>
+
+<file path="public/js/hangar.js">
+// Responsabilidad: Orquestar la interfaz del hangar, renderizar unidades por clase, gestionar operaciones CRUD y habilitar la vista de Comandante.
+
+let token = localStorage.getItem('token_hangar');
+let pilotoGuardado = localStorage.getItem('piloto_hangar');
+
+// Si no hay token de autenticación en almacenamiento local, redirigimos al acceso
+if (!token) {
+  window.location.href = 'login.html';
+}
+
+let pilotoActual = pilotoGuardado ? JSON.parse(pilotoGuardado) : null;
+let modoComandanteActivo = false;
+
+// Mapa de imágenes por clase táctica según los assets en public/images/
+let mapaImagenesClase = {
+  'Asalto': './images/asalto.webp',
+  'Brawler': './images/brawler.webp',
+  'Sigilo': './images/sigilo.webp',
+  'Sniper': './images/sniper.webp',
+  'Soporte': './images/soporte.webp'
+};
+
+// Referencias a elementos del DOM
+let distintivoPiloto = document.getElementById('distintivoPiloto');
+let insigniaRol = document.getElementById('insigniaRol');
+let btnCerrarSesion = document.getElementById('btnCerrarSesion');
+let alertaGlobal = document.getElementById('alertaGlobal');
+let tituloVistaActual = document.getElementById('tituloVistaActual');
+let contenedorBotonComandante = document.getElementById('contenedorBotonComandante');
+let btnVerTodaFlota = document.getElementById('btnVerTodaFlota');
+let btnVerMisMechas = document.getElementById('btnVerMisMechas');
+let panelDespliegue = document.getElementById('panelDespliegue');
+let formularioCrearMecha = document.getElementById('formularioCrearMecha');
+let gridMechas = document.getElementById('gridMechas');
+let mensajeVacio = document.getElementById('mensajeVacio');
+
+// Modal de edición
+let modalEditar = document.getElementById('modalEditar');
+let formularioEditarMecha = document.getElementById('formularioEditarMecha');
+let btnCancelarEdicion = document.getElementById('btnCancelarEdicion');
+let editarIdMecha = document.getElementById('editarIdMecha');
+let editarNombre = document.getElementById('editarNombre');
+let editarClase = document.getElementById('editarClase');
+let editarPotencia = document.getElementById('editarPotencia');
+let editarBlindaje = document.getElementById('editarBlindaje');
+let editarVelocidad = document.getElementById('editarVelocidad');
+
+// Notificaciones flotantes
+let mostrarMensaje = (mensaje, esError = true) => {
+  alertaGlobal.textContent = mensaje;
+  alertaGlobal.className = `alerta ${esError ? 'alerta-error' : 'alerta-exito'}`;
+  alertaGlobal.style.display = 'block';
+  setTimeout(() => {
+    alertaGlobal.style.display = 'none';
+  }, 4000);
+};
+
+// Sincronizar datos del perfil y actualizar la interfaz según el rol
+let inicializarPerfil = async () => {
+  try {
+    let respuesta = await fetch('/auth/perfil', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (respuesta.ok) {
+      let datos = await respuesta.json();
+      pilotoActual = datos.piloto;
+      localStorage.setItem('piloto_hangar', JSON.stringify(pilotoActual));
+    }
+  } catch (error) {
+    console.error('Error al sincronizar perfil con el servidor');
+  }
+
+  if (pilotoActual) {
+    distintivoPiloto.textContent = `Piloto: ${pilotoActual.nombre}`;
+    
+    if (pilotoActual.rol === 'comandante') {
+      insigniaRol.textContent = 'COMANDANTE';
+      insigniaRol.className = 'insignia-rol rol-comandante';
+      // Habilitamos el acceso táctico exclusivo para el comandante
+      contenedorBotonComandante.style.display = 'flex';
+      contenedorBotonComandante.style.gap = '0.5rem';
+    } else {
+      insigniaRol.textContent = 'PILOTO';
+      insigniaRol.className = 'insignia-rol rol-piloto';
+    }
+  }
+};
+
+// Renderizar una tarjeta individual vertical de mecha con efecto 3D flip al hover
+let crearTarjetaHTML = (mecha, esVistaFlotaCompleta = false) => {
+  let claseCss = `clase-${mecha.clase}`;
+  let etiquetaCss = `etiqueta-${mecha.clase}`;
+  let rutaImagen = mapaImagenesClase[mecha.clase] || './images/asalto.webp';
+
+  let infoPilotoHTML = '';
+  if (esVistaFlotaCompleta && mecha.pilotos) {
+    let nombrePiloto = mecha.pilotos.nombre || (Array.isArray(mecha.pilotos) && mecha.pilotos[0] ? mecha.pilotos[0].nombre : 'Desconocido');
+    let correoPiloto = mecha.pilotos.correo || (Array.isArray(mecha.pilotos) && mecha.pilotos[0] ? mecha.pilotos[0].correo : '');
+    infoPilotoHTML = `
+      <div class="piloto-propietario" style="display: flex; align-items: center; gap: 0.4rem;">
+        <svg class="icono icono-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        <span><strong>Piloto:</strong> ${nombrePiloto} ${correoPiloto ? `(${correoPiloto})` : ''}</span>
+      </div>
+    `;
+  }
+
+  // Permitimos editar/borrar solo si el usuario autenticado es el dueño de la mecha
+  let esDueno = pilotoActual && String(mecha.piloto_id) === String(pilotoActual.id);
+  let botonesAccionHTML = '';
+
+  if (esDueno) {
+    botonesAccionHTML = `
+      <div class="acciones-tarjeta">
+        <button class="btn btn-secundario" style="flex: 1; padding: 0.45rem; gap: 0.35rem; font-size: 0.85rem;" onclick="abrirModalEdicion('${mecha.id}', '${mecha.nombre}', '${mecha.clase}', ${mecha.potencia}, ${mecha.blindaje}, ${mecha.velocidad})">
+          <svg class="icono icono-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Modificar</span>
+        </button>
+        <button class="btn btn-peligro" style="flex: 1; padding: 0.45rem; gap: 0.35rem; font-size: 0.85rem;" onclick="confirmarEliminar('${mecha.id}', '${mecha.nombre}')">
+          <svg class="icono icono-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Desmantelar</span>
+        </button>
+      </div>
+    `;
+  } else {
+    botonesAccionHTML = `
+      <div class="acciones-tarjeta" style="display: flex; align-items: center; gap: 0.4rem; justify-content: center;">
+        <svg class="icono icono-sm" style="color: var(--texto-secundario);" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span style="font-size: 0.75rem; color: var(--texto-secundario); font-style: italic;">
+          Unidad de otro piloto (Solo lectura)
+        </span>
+      </div>
+    `;
+  }
+
+  let colorBarraClase = `var(--color-${mecha.clase.toLowerCase()})`;
+
+  return `
+    <div class="contenedor-tarjeta-flip">
+      <div class="tarjeta-flip-inner ${claseCss}">
+        
+        <!-- Cara Frontal: Imagen, Nombre y Clase -->
+        <div class="tarjeta-cara tarjeta-frontal">
+          <div class="tarjeta-imagen-wrapper">
+            <img src="${rutaImagen}" alt="Mecha clase ${mecha.clase}" class="imagen-mecha" onerror="this.src='./images/asalto.webp'">
+            <div class="overlay-gradiente"></div>
+            <div class="badge-clase-frontal">
+              <span class="etiqueta-clase ${etiquetaCss}">${mecha.clase}</span>
+            </div>
+          </div>
+
+          <div class="tarjeta-info-frontal">
+            <h4 class="nombre-mecha" title="${mecha.nombre}">${mecha.nombre}</h4>
+            ${infoPilotoHTML}
+            <div class="indicador-flip">
+              <svg class="icono icono-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              <span>Ver telemetría y stats</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cara Trasera: Telemetría, Stats y Acciones -->
+        <div class="tarjeta-cara tarjeta-trasera">
+          <div>
+            <div class="cabecera-trasera">
+              <div>
+                <span class="etiqueta-clase ${etiquetaCss}">${mecha.clase}</span>
+                <h4 class="nombre-mecha-trasero" title="${mecha.nombre}">${mecha.nombre}</h4>
+              </div>
+              <div class="badge-hud">HUD TÁCTICO</div>
+            </div>
+
+            <div class="lista-stats">
+              <div class="fila-stat">
+                <div class="etiquetas-stat">
+                  <span>Potencia de Fuego</span>
+                  <span class="stat-valor">${mecha.potencia}%</span>
+                </div>
+                <div class="barra-fondo">
+                  <div class="barra-progreso" style="width: ${mecha.potencia}%; background: ${colorBarraClase};"></div>
+                </div>
+              </div>
+
+              <div class="fila-stat">
+                <div class="etiquetas-stat">
+                  <span>Blindaje de Casco</span>
+                  <span class="stat-valor">${mecha.blindaje}%</span>
+                </div>
+                <div class="barra-fondo">
+                  <div class="barra-progreso" style="width: ${mecha.blindaje}%; background: var(--color-soporte);"></div>
+                </div>
+              </div>
+
+              <div class="fila-stat">
+                <div class="etiquetas-stat">
+                  <span>Velocidad de Propulsión</span>
+                  <span class="stat-valor">${mecha.velocidad}%</span>
+                </div>
+                <div class="barra-fondo">
+                  <div class="barra-progreso" style="width: ${mecha.velocidad}%; background: var(--color-acento);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            ${esVistaFlotaCompleta && !esDueno ? infoPilotoHTML : ''}
+            ${botonesAccionHTML}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+};
+
+// Cargar las mechas privadas del piloto autenticado (TICKET 2)
+let cargarMisMechas = async () => {
+  modoComandanteActivo = false;
+  tituloVistaActual.textContent = 'Mis Unidades de Combate';
+  panelDespliegue.style.display = 'block';
+  btnVerTodaFlota.style.display = 'inline-flex';
+  btnVerMisMechas.style.display = 'none';
+
+  try {
+    let respuesta = await fetch('/mechas', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarMensaje(datos.error || 'Error al cargar unidades');
+      return;
+    }
+
+    if (!datos.mechas || datos.mechas.length === 0) {
+      gridMechas.innerHTML = '';
+      mensajeVacio.style.display = 'block';
+      mensajeVacio.textContent = 'Aún no has desplegado ninguna mecha en tu hangar. ¡Construye tu primera unidad arriba!';
+      return;
+    }
+
+    mensajeVacio.style.display = 'none';
+    gridMechas.innerHTML = datos.mechas.map(m => crearTarjetaHTML(m, false)).join('');
+  } catch (error) {
+    mostrarMensaje('No se pudo conectar con el hangar');
+  }
+};
+
+// Cargar la flota completa de todos los pilotos (TICKET 5 - Rol Comandante)
+let cargarTodaLaFlota = async () => {
+  modoComandanteActivo = true;
+  tituloVistaActual.textContent = 'Flota Global de la Base Estelar (Vista de Comandante)';
+  panelDespliegue.style.display = 'none';
+  btnVerTodaFlota.style.display = 'none';
+  btnVerMisMechas.style.display = 'inline-flex';
+
+  try {
+    let respuesta = await fetch('/mechas/todas', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (respuesta.status === 403) {
+      mostrarMensaje('Acceso denegado: se requiere rango de Comandante');
+      cargarMisMechas();
+      return;
+    }
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarMensaje(datos.error || 'Error al obtener la flota completa');
+      return;
+    }
+
+    if (!datos.flota || datos.flota.length === 0) {
+      gridMechas.innerHTML = '';
+      mensajeVacio.style.display = 'block';
+      mensajeVacio.textContent = 'No hay unidades de combate registradas en ningún sector de la base.';
+      return;
+    }
+
+    mensajeVacio.style.display = 'none';
+    gridMechas.innerHTML = datos.flota.map(m => crearTarjetaHTML(m, true)).join('');
+  } catch (error) {
+    mostrarMensaje('Error al consultar la flota global');
+  }
+};
+
+// Desplegar nueva mecha (TICKET 1)
+formularioCrearMecha.addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+
+  let nombre = document.getElementById('nombreMecha').value.trim();
+  let clase = document.getElementById('claseMecha').value;
+  let potencia = document.getElementById('potenciaMecha').value;
+  let blindaje = document.getElementById('blindajeMecha').value;
+  let velocidad = document.getElementById('velocidadMecha').value;
+
+  try {
+    // Enviamos únicamente los datos de la mecha: el servidor asigna el piloto_id desde el token
+    let respuesta = await fetch('/mechas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre, clase, potencia, blindaje, velocidad })
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarMensaje(datos.error || 'Error al construir la mecha');
+      return;
+    }
+
+    mostrarMensaje('¡Unidad mecha construida y desplegada exitosamente!', false);
+    formularioCrearMecha.reset();
+    document.getElementById('potenciaMecha').value = 75;
+    document.getElementById('blindajeMecha').value = 80;
+    document.getElementById('velocidadMecha').value = 65;
+
+    cargarMisMechas();
+  } catch (error) {
+    mostrarMensaje('Fallo de comunicación con la fábrica de mechas');
+  }
+});
+
+// Modal de edición
+window.abrirModalEdicion = (id, nombre, clase, potencia, blindaje, velocidad) => {
+  editarIdMecha.value = id;
+  editarNombre.value = nombre;
+  editarClase.value = clase;
+  editarPotencia.value = potencia;
+  editarBlindaje.value = blindaje;
+  editarVelocidad.value = velocidad;
+  modalEditar.style.display = 'flex';
+};
+
+btnCancelarEdicion.addEventListener('click', () => {
+  modalEditar.style.display = 'none';
+});
+
+// Guardar cambios de edición (TICKET 3)
+formularioEditarMecha.addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+
+  let id = editarIdMecha.value;
+  let nombre = editarNombre.value.trim();
+  let clase = editarClase.value;
+  let potencia = editarPotencia.value;
+  let blindaje = editarBlindaje.value;
+  let velocidad = editarVelocidad.value;
+
+  try {
+    let respuesta = await fetch(`/mechas/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre, clase, potencia, blindaje, velocidad })
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarMensaje(datos.error || 'No tienes permiso para modificar esta mecha');
+      return;
+    }
+
+    mostrarMensaje('Mecha reconfigurada con éxito', false);
+    modalEditar.style.display = 'none';
+
+    if (modoComandanteActivo) {
+      cargarTodaLaFlota();
+    } else {
+      cargarMisMechas();
+    }
+  } catch (error) {
+    mostrarMensaje('Error al actualizar los sistemas de la mecha');
+  }
+});
+
+// Desmantelar mecha (TICKET 4)
+window.confirmarEliminar = async (id, nombre) => {
+  let confirmado = window.confirm(`¿Estás seguro de que deseas desmantelar la unidad "${nombre}"? Esta acción no se puede deshacer.`);
+  if (!confirmado) return;
+
+  try {
+    let respuesta = await fetch(`/mechas/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (respuesta.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarMensaje(datos.error || 'No tienes permiso para desmantelar esta mecha');
+      return;
+    }
+
+    mostrarMensaje('Unidad desmantelada del hangar', false);
+
+    if (modoComandanteActivo) {
+      cargarTodaLaFlota();
+    } else {
+      cargarMisMechas();
+    }
+  } catch (error) {
+    mostrarMensaje('Error al procesar la desmantelación');
+  }
+};
+
+// Eventos de botones de cambio de vista
+btnVerTodaFlota.addEventListener('click', cargarTodaLaFlota);
+btnVerMisMechas.addEventListener('click', cargarMisMechas);
+
+// Cerrar sesión
+btnCerrarSesion.addEventListener('click', () => {
+  localStorage.removeItem('token_hangar');
+  localStorage.removeItem('piloto_hangar');
+  window.location.href = 'login.html';
+});
+
+// Inicialización de la aplicación al cargar
+(async () => {
+  await inicializarPerfil();
+  await cargarMisMechas();
+})();
+</file>
+
+<file path="public/js/login.js">
+// Responsabilidad: Gestionar el envío de credenciales de inicio de sesión y almacenar el pase JWT en el navegador.
+
+let formularioLogin = document.getElementById('formularioLogin');
+let mensajeAlerta = document.getElementById('mensajeAlerta');
+
+let mostrarAlerta = (mensaje, esError = true) => {
+  mensajeAlerta.textContent = mensaje;
+  mensajeAlerta.className = `alerta ${esError ? 'alerta-error' : 'alerta-exito'}`;
+  mensajeAlerta.style.display = 'block';
+};
+
+formularioLogin.addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+
+  let correo = document.getElementById('correo').value.trim();
+  let clave = document.getElementById('clave').value;
+
+  try {
+    // Enviamos las credenciales al endpoint de autenticación
+    let respuesta = await fetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, clave })
+    });
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarAlerta(datos.error || 'Fallo en la autenticación del piloto');
+      return;
+    }
+
+    // Persistimos el token en localStorage para enviarlo en las cabeceras Authorization de las peticiones subsiguientes
+    localStorage.setItem('token_hangar', datos.token);
+    localStorage.setItem('piloto_hangar', JSON.stringify(datos.piloto));
+
+    mostrarAlerta('Credenciales validadas. Ingresando al hangar...', false);
+
+    // Redirigimos al panel de control una vez asegurado el pase de acceso
+    setTimeout(() => {
+      window.location.href = 'hangar.html';
+    }, 800);
+  } catch (error) {
+    mostrarAlerta('No se pudo conectar con la terminal de mando del servidor');
+  }
+});
+</file>
+
+<file path="public/js/registro.js">
+// Responsabilidad: Procesar la inscripción de nuevos pilotos y gestionar la redirección al portal de ingreso.
+
+let formularioRegistro = document.getElementById('formularioRegistro');
+let mensajeAlerta = document.getElementById('mensajeAlerta');
+
+let mostrarAlerta = (mensaje, esError = true) => {
+  mensajeAlerta.textContent = mensaje;
+  mensajeAlerta.className = `alerta ${esError ? 'alerta-error' : 'alerta-exito'}`;
+  mensajeAlerta.style.display = 'block';
+};
+
+formularioRegistro.addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+
+  let nombre = document.getElementById('nombre').value.trim();
+  let correo = document.getElementById('correo').value.trim();
+  let clave = document.getElementById('clave').value;
+
+  if (clave.length < 6) {
+    mostrarAlerta('La clave de seguridad debe contener al menos 6 caracteres');
+    return;
+  }
+
+  try {
+    // Enviamos los datos para crear el registro de piloto con rol predeterminado 'piloto'
+    let respuesta = await fetch('/auth/registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, correo, clave })
+    });
+
+    let datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarAlerta(datos.error || 'Error al procesar el registro del piloto');
+      return;
+    }
+
+    mostrarAlerta('¡Registro completado con éxito! Redirigiendo al acceso...', false);
+
+    // Redirigimos al login tras una breve confirmación visual
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1200);
+  } catch (error) {
+    mostrarAlerta('Error de comunicación con el centro de reclutamiento');
+  }
+});
+</file>
+
+<file path="public/hangar.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal del Hangar | LevelUp Code</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body>
+
+  <!-- Barra Superior de Mando -->
+  <header class="barra-navegacion">
+    <div class="logo-hangar">
+      <svg class="icono icono-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+      <span>HANGAR DE MECHAS :: TERMINAL TÁCTICA</span>
+    </div>
+
+    <div class="perfil-usuario">
+      <span id="distintivoPiloto" style="font-weight: 600;">Cargando piloto...</span>
+      <span id="insigniaRol" class="insignia-rol rol-piloto">PILOTO</span>
+      <button id="btnCerrarSesion" class="btn btn-secundario" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+        Cerrar Sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+
+    <!-- Mensajes y Alertas Globales -->
+    <div id="alertaGlobal" style="display: none;"></div>
+
+    <!-- Barra de Acciones y Vistas Especiales -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <h2 id="tituloVistaActual" style="font-size: 1.5rem;">Mis Unidades de Combate</h2>
+      
+      <div id="contenedorBotonComandante" style="display: none;">
+        <button id="btnVerTodaFlota" class="btn btn-comandante">
+          <svg class="icono" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Ver Hangar Completo (Comandante)</span>
+        </button>
+        <button id="btnVerMisMechas" class="btn btn-secundario" style="display: none;">
+          <svg class="icono" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Volver a Mis Mechas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de Construcción y Despliegue de Mechas -->
+    <section id="panelDespliegue" class="seccion-panel">
+      <h3 class="titulo-seccion">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="icono" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Desplegar Nueva Unidad Mecha</span>
+        </span>
+      </h3>
+
+      <form id="formularioCrearMecha" class="formulario-grid">
+        <div class="grupo-campo">
+          <label for="nombreMecha">Nombre de la Unidad</label>
+          <input type="text" id="nombreMecha" class="campo-input" placeholder="Ej: Titán Némesis" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="claseMecha">Clase Táctica</label>
+          <select id="claseMecha" class="campo-select" required>
+            <option value="Asalto">Asalto — Ofensiva Pesada</option>
+            <option value="Brawler">Brawler — Combate Cuerpo a Cuerpo</option>
+            <option value="Sigilo">Sigilo — Infiltración Furtiva</option>
+            <option value="Sniper">Sniper — Disparo de Precisión</option>
+            <option value="Soporte">Soporte — Escudos y Defensa</option>
+          </select>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="potenciaMecha">Potencia (1 - 100)</label>
+          <input type="number" id="potenciaMecha" class="campo-input" min="1" max="100" value="75" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="blindajeMecha">Blindaje (1 - 100)</label>
+          <input type="number" id="blindajeMecha" class="campo-input" min="1" max="100" value="80" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="velocidadMecha">Velocidad (1 - 100)</label>
+          <input type="number" id="velocidadMecha" class="campo-input" min="1" max="100" value="65" required>
+        </div>
+
+        <div class="grupo-campo" style="justify-content: flex-end;">
+          <button type="submit" class="btn btn-primario" style="height: 40px; margin-top: auto;">
+            <svg class="icono" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Construir y Desplegar</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Galería de Unidades Mechas -->
+    <section>
+      <div id="gridMechas" class="grid-mechas">
+        <!-- Renderizado dinámico desde hangar.js -->
+      </div>
+      <div id="mensajeVacio" style="display: none; text-align: center; padding: 3rem; color: var(--texto-secundario);">
+        No hay unidades registradas en este sector del hangar.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Reconfigurar / Editar Mecha -->
+  <div id="modalEditar" class="modal-overlay" style="display: none;">
+    <div class="modal-contenido">
+      <h3 class="titulo-seccion">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="icono" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Reconfigurar Mecha</span>
+        </span>
+      </h3>
+
+      <form id="formularioEditarMecha" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="editarIdMecha">
+
+        <div class="grupo-campo">
+          <label for="editarNombre">Nombre de la Unidad</label>
+          <input type="text" id="editarNombre" class="campo-input" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarClase">Clase Táctica</label>
+          <select id="editarClase" class="campo-select" required>
+            <option value="Asalto">Asalto — Ofensiva Pesada</option>
+            <option value="Brawler">Brawler — Combate Cuerpo a Cuerpo</option>
+            <option value="Sigilo">Sigilo — Infiltración Furtiva</option>
+            <option value="Sniper">Sniper — Disparo de Precisión</option>
+            <option value="Soporte">Soporte — Escudos y Defensa</option>
+          </select>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarPotencia">Potencia (1 - 100)</label>
+          <input type="number" id="editarPotencia" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarBlindaje">Blindaje (1 - 100)</label>
+          <input type="number" id="editarBlindaje" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="editarVelocidad">Velocidad (1 - 100)</label>
+          <input type="number" id="editarVelocidad" class="campo-input" min="1" max="100" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" id="btnCancelarEdicion" class="btn btn-secundario">Cancelar</button>
+          <button type="submit" class="btn btn-primario">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="./js/hangar.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/login.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso al Hangar | LevelUp Code</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body>
+
+  <header class="barra-navegacion">
+    <div class="logo-hangar">
+      <svg class="icono icono-lg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>HANGAR DE MECHAS :: ACCESO</span>
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+    <div class="contenedor-auth">
+      <div class="auth-header">
+        <h1>Identificación de Piloto</h1>
+        <p>Ingresa tus credenciales para acceder a tu hangar privado</p>
+      </div>
+
+      <div id="mensajeAlerta" style="display: none;"></div>
+
+      <form id="formularioLogin" class="formulario-grid" style="grid-template-columns: 1fr;">
+        <div class="grupo-campo">
+          <label for="correo">Correo del Piloto</label>
+          <input type="email" id="correo" class="campo-input" placeholder="piloto@hangar.space" required autocomplete="email">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="clave">Código de Seguridad (Contraseña)</label>
+          <input type="password" id="clave" class="campo-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="btnIngresar" class="btn btn-primario" style="margin-top: 0.5rem;">
+          Autenticar y Entrar al Hangar
+        </button>
+      </form>
+
+      <div class="auth-enlace">
+        ¿Aún no tienes registro de piloto? <a href="./registro.html">Solicitar ingreso aquí</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="./js/login.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/registro.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Piloto | LevelUp Code</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body>
+
+  <header class="barra-navegacion">
+    <div class="logo-hangar">
+      <svg class="icono icono-lg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>HANGAR DE MECHAS :: RECLUTAMIENTO</span>
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+    <div class="contenedor-auth">
+      <div class="auth-header">
+        <h1>Ficha de Reclutamiento</h1>
+        <p>Registra tu perfil de piloto para recibir tu hangar privado</p>
+      </div>
+
+      <div id="mensajeAlerta" style="display: none;"></div>
+
+      <form id="formularioRegistro" class="formulario-grid" style="grid-template-columns: 1fr;">
+        <div class="grupo-campo">
+          <label for="nombre">Nombre / Distintivo del Piloto</label>
+          <input type="text" id="nombre" class="campo-input" placeholder="Ej: Valquiria-01" required autocomplete="name">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="correo">Correo Electrónico Oficial</label>
+          <input type="email" id="correo" class="campo-input" placeholder="piloto@hangar.space" required autocomplete="email">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="clave">Código de Seguridad (Contraseña)</label>
+          <input type="password" id="clave" class="campo-input" placeholder="Mínimo 6 caracteres" required autocomplete="new-password">
+        </div>
+
+        <button type="submit" id="btnRegistrar" class="btn btn-primario" style="margin-top: 0.5rem;">
+          Completar Registro Militar
+        </button>
+      </form>
+
+      <div class="auth-enlace">
+        ¿Ya tienes rango registrado? <a href="./login.html">Iniciar sesión aquí</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="./js/registro.js"></script>
+</body>
+</html>
+</file>
+
+<file path="routes/auth.routes.js">
+// Responsabilidad: Definir los puntos de entrada HTTP para la autenticación y perfil de pilotos.
+
+import { Router } from 'express';
+import { registrarPiloto, iniciarSesion, obtenerPerfil } from '../controllers/auth.controller.js';
+import verificarPase from '../middlewares/verificarPase.js';
+
+let authRouter = Router();
+
+// Rutas públicas de acceso inicial
+authRouter.post('/registro', registrarPiloto);
+authRouter.post('/login', iniciarSesion);
+
+// Ruta protegida para consultar los datos del piloto en sesión activa
+authRouter.get('/perfil', verificarPase, obtenerPerfil);
+
+export default authRouter;
+</file>
+
+<file path="routes/mechas.routes.js">
+// Responsabilidad: Definir y proteger todas las rutas del hangar de mechas mediante el middleware de verificación de token.
+
+import { Router } from 'express';
+import {
+  crearMecha,
+  listarMisMechas,
+  actualizarMecha,
+  eliminarMecha,
+  listarTodasMechas
+} from '../controllers/mechas.controller.js';
+import verificarPase from '../middlewares/verificarPase.js';
+
+let mechasRouter = Router();
+
+// Aplicamos el middleware a nivel de router para garantizar que ninguna ruta del hangar quede desprotegida por omisión
+mechasRouter.use(verificarPase);
+
+// TICKET 1: Construir y desplegar nueva mecha
+mechasRouter.post('/', crearMecha);
+
+// TICKET 2: Listar mechas del piloto autenticado
+mechasRouter.get('/', listarMisMechas);
+
+// TICKET 5: Supervisión de toda la flota (colocado antes de /:id para evitar que Express lo interprete como parámetro de ruta)
+mechasRouter.get('/todas', listarTodasMechas);
+
+// TICKET 3: Reconfigurar mecha propia
+mechasRouter.put('/:id', actualizarMecha);
+
+// TICKET 4: Desmantelar mecha propia
+mechasRouter.delete('/:id', eliminarMecha);
+
+export default mechasRouter;
+</file>
+
+<file path=".env.example">
+# Configuración del Servidor
+PORT=3000
+
+# Base de datos Supabase (Nomenclatura moderna: publishable / secret)
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_SECRET_KEY=tu_supabase_secret_key_aqui
+
+# Secreto de Autenticación JWT (Generado independientemente de Supabase)
+JWT_SECRET=clave_secreta_super_segura_para_firmar_los_tokens_del_hangar
+</file>
+
+<file path=".gitignore">
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Variables de entorno secretas
+.env
+.env.local
+
+# Logs del sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos del sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+</file>
+
+<file path="package.json">
+{
+  "name": "m7l4-hangar-mechas",
+  "version": "1.0.0",
+  "description": "Hangar de Mechas - Control de Acceso y Autorización en Express con Supabase y JWT",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "express",
+    "supabase",
+    "jwt",
+    "bcryptjs",
+    "authorization",
+    "rbac",
+    "mechas",
+    "levelup-code"
+  ],
+  "author": "LevelUp Code",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
+</file>
+
+<file path="README.md">
+# 🤖 Misión: Hangar de Mechas — Control de Acceso y Autorización
+
+> **Versión de Control del Instructor** — Proyecto de referencia 100% funcional y completo para LevelUp Code.
+
+---
+
+## 🌌 Premisa
+
+La Base Estelar cuenta con múltiples escuadrones de combate. Cada **piloto** dispone de su propio hangar privado donde puede construir, calibrar y desmantelar sus unidades **mechas**.
+
+Sin embargo, en el fragor de la guerra galáctica, la seguridad informática es vital:
+- Ningún piloto debe poder alterar o desmantelar los mechas de otro compañero (prevención de vulnerabilidades IDOR - *Insecure Direct Object References*).
+- El **Comandante** de la base es la única autoridad con acceso a la telemetría de la **flota global**.
+- La información crítica de identidad (como los hashes criptográficos de las claves de acceso) jamás debe exponerse en las respuestas del servidor.
+
+---
+
+## 💡 ¿Por qué vale la pena?
+
+En misiones anteriores aprendimos a autenticar usuarios (**¿Quién eres?**) mediante contraseñas cifradas y tokens JWT.
+
+En esta misión damos el salto crucial hacia la **Autorización** (**¿Qué tienes permitido hacer?**):
+1. **Autorización basada en Propiedad (*Ownership Control*)**: Validar que el recurso sobre el que se ejecuta una acción pertenezca estrictamente al usuario que emite la petición (`req.piloto.id`).
+2. **Autorización basada en Roles (*RBAC - Role-Based Access Control*)**: Restringir endpoints administrativos únicamente a rangos autorizados (`rol === "comandante"`).
+3. **Principio de Menor Exposición (*Least Privilege Data Exposure*)**: Asegurar mediante consultas explícitas (`.select('id, nombre, correo, rol')`) que los hashes de contraseñas nunca viajen en las respuestas HTTP.
+
+---
+
+## 🎯 Lista de Tickets Pedagógicos
+
+| Ticket | Endpoint | Método | Descripción Pedagógica |
+| :--- | :--- | :---: | :--- |
+| **TICKET 1** | `/mechas` | `POST` | Construye una mecha asignando obligatoriamente el `piloto_id` desde `req.piloto.id` (extraído del token), **nunca** desde `req.body`. |
+| **TICKET 2** | `/mechas` | `GET` | Lista exclusivamente las mechas pertenecientes al piloto autenticado (`.eq('piloto_id', req.piloto.id)`). |
+| **TICKET 3** | `/mechas/:id` | `PUT` | Edita una mecha. Antes de actualizar, consulta la base de datos, valida que `mecha.piloto_id === req.piloto.id` y responde `403` si no coincide. |
+| **TICKET 4** | `/mechas/:id` | `DELETE` | Desmantela una mecha previa validación estricta de propiedad; responde `403` si se intenta borrar un recurso ajeno. |
+| **TICKET 5** | `/mechas/todas` | `GET` | Endpoint táctico exclusivo para el rango `comandante`. Responde `403` a pilotos normales y `200` con la flota completa a comandantes. |
+| **TICKET 6 (Bonus)** | Global | `SELECT` | Todas las consultas que devuelvan datos de pilotos usan `.select('id, nombre, correo, rol')` explícito, nunca `select('*')`. |
+
+---
+
+## 🛠️ Stack Técnico
+
+- **Entorno de Ejecución**: Node.js
+- **Framework Web**: Express
+- **Gestor de Paquetes**: `pnpm` (no npm)
+- **Base de Datos**: Supabase (`@supabase/supabase-js`), utilizado como base de datos PostgreSQL estándar (sin Supabase Auth, sin RLS). Nomenclatura moderna `publishable` / `secret`.
+- **Criptografía y Autenticación**: `bcryptjs` (hasheo seguro) + `jsonwebtoken` (JWT con secreto propio).
+- **Pruebas**: Archivo `test.http` integrado para la extensión **REST Client** de VS Code.
+- **Frontend**: HTML5, CSS3 plano y Vanilla JS servidos estáticamente desde `public/`.
+
+---
+
+## 🗄️ Esquema de Base de Datos (Supabase SQL)
+
+Ejecuta el siguiente script en el **SQL Editor** de tu proyecto Supabase para crear las tablas necesarias:
+
+```sql
+-- 1. Tabla de Pilotos (con columna rol)
+CREATE TABLE IF NOT EXISTS pilotos (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre TEXT NOT NULL,
+  correo TEXT UNIQUE NOT NULL,
+  clave TEXT NOT NULL,
+  rol TEXT NOT NULL DEFAULT 'piloto'
+);
+
+-- 2. Tabla de Mechas
+CREATE TABLE IF NOT EXISTS mechas (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  piloto_id BIGINT REFERENCES pilotos(id) ON DELETE CASCADE,
+  nombre TEXT NOT NULL,
+  clase TEXT NOT NULL CHECK (clase IN ('Asalto', 'Brawler', 'Sigilo', 'Sniper', 'Soporte')),
+  potencia INTEGER NOT NULL CHECK (potencia BETWEEN 1 AND 100),
+  blindaje INTEGER NOT NULL CHECK (blindaje BETWEEN 1 AND 100),
+  velocidad INTEGER NOT NULL CHECK (velocidad BETWEEN 1 AND 100),
+  creado_en TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
+## 🚀 Cómo Correr el Proyecto
+
+### 1. Clonar e Instalar Dependencias con `pnpm`
+
+```bash
+pnpm install
+```
+
+### 2. Configurar Variables de Entorno
+
+Copia el archivo de ejemplo `.env.example` y crea tu `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Configura tus credenciales reales en `.env`:
+
+```env
+PORT=3000
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_SECRET_KEY=tu_supabase_secret_key
+JWT_SECRET=tu_clave_secreta_para_firmar_jwt
+```
+
+### 3. Iniciar el Servidor de Desarrollo
+
+```bash
+pnpm dev
+```
+
+La aplicación estará lista y accesible en:
+- **Terminal Web**: [http://localhost:3000](http://localhost:3000)
+- **Registro de Pilotos**: [http://localhost:3000/registro.html](http://localhost:3000/registro.html)
+- **Hangar de Mechas**: [http://localhost:3000/hangar.html](http://localhost:3000/hangar.html)
+
+---
+
+## 🧪 Cómo Probar con `test.http`
+
+1. Instala la extensión **REST Client** (`humao.rest-client`) en Visual Studio Code.
+2. Abre el archivo [`test.http`](file:///c:/Users/david/Desktop/M7L4%20solucion/test.http).
+3. Haz clic sobre **`Send Request`** en orden descendente:
+   - **Registro e inicio de sesión** de dos pilotos distintos (`Valquiria-01` y `Tigre-Blindado`).
+   - **Creación de mechas** con cada piloto.
+   - **Listado y edición exitosa** de mechas propias (`200 OK`).
+   - **Intento de usurpación / edición ajena**: El Piloto 2 intenta modificar o borrar la mecha del Piloto 1 (`403 Forbidden`).
+   - **Intento de acceso de comandante**: Un piloto normal intenta acceder a `/mechas/todas` (`403 Forbidden`).
+   - **Ascenso a Comandante**: Ejecuta en Supabase:
+     ```sql
+     UPDATE pilotos SET rol = 'comandante' WHERE correo = 'valquiria@hangar.space';
+     ```
+     Vuelve a hacer login con `valquiria@hangar.space` y ejecuta `GET /mechas/todas` (`200 OK`).
+   - **Desmantelación de mecha propia** (`200 OK`).
+
+---
+
+## 🏆 Bonus y Buenas Prácticas Implementadas
+
+- **Protección contra Fuga de Datos (Data Leakage)**: Ningún endpoint responde jamás con el hash `clave` de los pilotos gracias a selecciones de columnas explícitas.
+- **Mensajes de Error Ambigüos contra Enumeración**: Al intentar acceder a un recurso ajeno o inexistente, se responde un `403` estándar sin revelar metadatos internos.
+- **Interfaz Reactiva por Clases y Tarjetas Verticales 3D Flip**: En el frontend, cada mecha se presenta como una tarjeta coleccionable vertical con su ilustración táctica y, al pasar el cursor, gira 180° para revelar la telemetría, estadísticas y acciones:
+  - **Asalto**: Borde carmesí ofensivo (`#ef4444`)
+  - **Brawler**: Borde verde de combate cuerpo a cuerpo (`#10b981`)
+  - **Sigilo**: Borde morado furtivo (`#a855f7`)
+  - **Sniper**: Borde amarillo de precisión a distancia (`#eab308`)
+  - **Soporte**: Borde azul defensivo (`#3b82f6`)
+- **Vista Especial para Comandantes**: Si el token decodificado posee el rol `comandante`, la interfaz activa el botón *"Ver Hangar Completo"* permitiendo la inspección de toda la flota de la base estelar.
+</file>
+
+<file path="server.js">
+// Responsabilidad: Configurar el servidor Express, registrar middlewares globales y levantar la aplicación web del Hangar.
+
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import authRouter from './routes/auth.routes.js';
+import mechasRouter from './routes/mechas.routes.js';
+
+// Cargamos las variables de entorno al iniciar la aplicación
+dotenv.config();
+
+let __filename = fileURLToPath(import.meta.url);
+let __dirname = path.dirname(__filename);
+
+let app = express();
+let puerto = process.env.PORT || 3000;
+
+// Middlewares globales esenciales
+app.use(cors()); // Habilita peticiones cruzadas para desarrollo y pruebas
+app.use(express.json()); // Permite analizar cuerpos de petición en formato JSON
+app.use(express.static(path.join(__dirname, 'public'))); // Sirve la interfaz estática del frontend garantizando la ruta absoluta
+
+// Registro de enrutadores modulares
+app.use('/auth', authRouter);
+app.use('/mechas', mechasRouter);
+
+// Ruta raíz de cortesía para redirigir directamente al panel de acceso
+app.get('/', (req, res) => {
+  res.redirect('/login.html');
+});
+
+// Manejador centralizado para rutas no encontradas (404)
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada en el sistema del Hangar' });
+});
+
+// Iniciamos la escucha del servidor
+app.listen(puerto, () => {
+  console.log(`[HANGAR DE MECHAS] Servidor activo y listo en http://localhost:${puerto}`);
+});
+</file>
+
+<file path="test.http">
+### ==============================================================================
+### HANGAR DE MECHAS - SUITE DE PRUEBAS DE ENDPOINTS (REST Client de VS Code)
+### ==============================================================================
+### Variables globales de entorno local
+@baseUrl = http://localhost:3000
+
+### ==============================================================================
+### 1. REGISTRO E INICIO DE SESIÓN DE PILOTOS DE PRUEBA
+### ==============================================================================
+
+### 1.1 Registrar Piloto 1 (Valquiria)
+# @name registrarPiloto1
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+  "nombre": "Valquiria-01",
+  "correo": "valquiria@hangar.space",
+  "clave": "secreto123"
+}
+
+### 1.2 Iniciar Sesión con Piloto 1 (Obtener Token)
+# @name loginPiloto1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "valquiria@hangar.space",
+  "clave": "secreto123"
+}
+
+### Guardamos el token de Piloto 1 para las siguientes peticiones
+@tokenPiloto1 = {{loginPiloto1.response.body.token}}
+
+### 1.3 Registrar Piloto 2 (Tigre)
+# @name registrarPiloto2
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+  "nombre": "Tigre-Blindado",
+  "correo": "tigre@hangar.space",
+  "clave": "secreto456"
+}
+
+### 1.4 Iniciar Sesión con Piloto 2 (Obtener Token)
+# @name loginPiloto2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "tigre@hangar.space",
+  "clave": "secreto456"
+}
+
+### Guardamos el token de Piloto 2 para probar intentos de usurpación
+@tokenPiloto2 = {{loginPiloto2.response.body.token}}
+
+
+### ==============================================================================
+### 2. TICKET 6 (BONUS) - CONSULTA DE PERFIL SIN HASH DE CLAVE
+### ==============================================================================
+
+### 2.1 Consultar perfil de Piloto 1 (Debe retornar id, nombre, correo, rol; NUNCA la clave)
+GET {{baseUrl}}/auth/perfil
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ==============================================================================
+### 3. TICKET 1 - CREAR MECHAS (ASIGNACIÓN AUTOMÁTICA POR TOKEN)
+### ==============================================================================
+
+### 3.1 Crear Mecha para Piloto 1 (Esperado: 201 Created)
+# @name crearMecha1
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Titán Némesis",
+  "clase": "Asalto",
+  "potencia": 90,
+  "blindaje": 85,
+  "velocidad": 60
+}
+
+### Guardamos el ID de la mecha recién creada para las pruebas posteriores
+@mechaId = {{crearMecha1.response.body.mecha.id}}
+
+### 3.2 Crear una segunda Mecha de Sigilo para Piloto 1 (Esperado: 201 Created)
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Sombra Espectral",
+  "clase": "Sigilo",
+  "potencia": 65,
+  "blindaje": 50,
+  "velocidad": 95
+}
+
+### 3.3 Crear Mecha para Piloto 2 (Esperado: 201 Created)
+POST {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto2}}
+Content-Type: application/json
+
+{
+  "nombre": "Baluarte Égida",
+  "clase": "Soporte",
+  "potencia": 50,
+  "blindaje": 98,
+  "velocidad": 40
+}
+
+
+### ==============================================================================
+### 4. TICKET 2 - LISTAR MIS MECHAS (AISLAMIENTO DE PROPIEDAD)
+### ==============================================================================
+
+### 4.1 Listar mechas de Piloto 1 (Esperado: 200 OK con solo las 2 mechas de Piloto 1)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+
+### 4.2 Listar mechas de Piloto 2 (Esperado: 200 OK con solo la mecha de Piloto 2)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto2}}
+
+
+### ==============================================================================
+### 5. TICKET 3 - EDITAR MECHA (CONTROL DE PROPIEDAD Y PREVENCIÓN IDOR)
+### ==============================================================================
+
+### 5.1 Piloto 1 edita su propia mecha (Esperado: 200 OK)
+PUT {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto1}}
+Content-Type: application/json
+
+{
+  "nombre": "Titán Némesis Mk-II",
+  "clase": "Asalto",
+  "potencia": 98,
+  "blindaje": 90,
+  "velocidad": 65
+}
+
+### 5.2 [SEGURIDAD] Piloto 2 intenta editar la mecha de Piloto 1 (Esperado: 403 Forbidden)
+PUT {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto2}}
+Content-Type: application/json
+
+{
+  "nombre": "Mecha Hackeada por Piloto 2",
+  "clase": "Sigilo",
+  "potencia": 1,
+  "blindaje": 1,
+  "velocidad": 1
+}
+
+
+### ==============================================================================
+### 6. TICKET 4 - ELIMINAR MECHA (CONTROL DE PROPIEDAD ANTES DE BORRAR)
+### ==============================================================================
+
+### 6.1 [SEGURIDAD] Piloto 2 intenta desmantelar la mecha de Piloto 1 (Esperado: 403 Forbidden)
+DELETE {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto2}}
+
+
+### ==============================================================================
+### 7. TICKET 5 - CONTROL DE ACCESO BASADO EN ROLES (/mechas/todas)
+### ==============================================================================
+
+### 7.1 Piloto con rol 'piloto' intenta ver toda la flota (Esperado: 403 Forbidden)
+GET {{baseUrl}}/mechas/todas
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ------------------------------------------------------------------------------
+### INSTRUCCIÓN PARA PROBAR EL ROL DE COMANDANTE:
+### Para ascender a un piloto al rango de 'comandante', ejecuta este comando en el
+### SQL Editor de Supabase o cambia el campo 'rol' a 'comandante' en Table Editor:
+###
+### UPDATE pilotos SET rol = 'comandante' WHERE correo = 'valquiria@hangar.space';
+###
+### Luego, vuelve a iniciar sesión con Piloto 1 (Paso 1.2) para regenerar el token JWT
+### con el nuevo rol: { id, nombre, rol: "comandante" }.
+### ------------------------------------------------------------------------------
+
+### 7.2 Comandante consulta toda la flota global (Esperado: 200 OK con mechas de todos los pilotos)
+### (Ejecutar después de ascender al usuario en Supabase y hacer re-login)
+GET {{baseUrl}}/mechas/todas
+Authorization: Bearer {{tokenPiloto1}}
+
+
+### ==============================================================================
+### 8. TICKET 4 - ELIMINAR MECHA PROPIA (CIERRE DE CICLO DE VIDA)
+### ==============================================================================
+
+### 8.1 Piloto 1 desmantela su propia mecha (Esperado: 200 OK)
+DELETE {{baseUrl}}/mechas/{{mechaId}}
+Authorization: Bearer {{tokenPiloto1}}
+
+### 8.2 Verificar que la mecha ya no aparece en el hangar de Piloto 1 (Esperado: 200 OK)
+GET {{baseUrl}}/mechas
+Authorization: Bearer {{tokenPiloto1}}
+</file>
+
+</files>
