@@ -11,7 +11,7 @@ export const duracion = "3:34";
 
 // Si cambias la portada, el nombre tiene que ser idéntico al del archivo
 // en public/portadas/ (mayúsculas y extensión incluidas). Si no, la imagen no carga.
-export const portada = "/portadas/turno-de-noche.svg";
+export const portada = "/portadas/luces-del-hangar.webp";
 
 // Home Challenge, Ticket 2
 export const anio = 2019;
