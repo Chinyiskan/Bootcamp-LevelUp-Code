@@ -1,0 +1,116 @@
+/* Estilos de toda la app. Ya vienen listos: tu trabajo hoy es el JSX. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at top, #10233d 0%, #070b14 60%);
+    color: #e6f1ff;
+}
+
+.app {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 48px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ── Encabezado ───────────────────────────── */
+
+.encabezado {
+    text-align: center;
+}
+
+.logo {
+    font-size: 2.4rem;
+    letter-spacing: 0.08em;
+    color: #61dafb;
+}
+
+.lema {
+    margin-top: 4px;
+    color: #8aa4c2;
+    font-size: 0.95rem;
+}
+
+/* ── Tarjeta de la canción ────────────────── */
+
+.tarjeta {
+    background: #0f1a2b;
+    border: 1px solid #1d3350;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+.tarjeta-portada {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    display: block;
+}
+
+.tarjeta-titulo {
+    margin-top: 18px;
+    font-size: 1.5rem;
+}
+
+.tarjeta-artista {
+    margin-top: 4px;
+    color: #61dafb;
+    font-weight: 600;
+}
+
+.tarjeta-detalle {
+    margin-top: 6px;
+    color: #8aa4c2;
+    font-size: 0.9rem;
+}
+
+/* ── Controles (bonus) ────────────────────── */
+
+.controles {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.boton-control {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    background: #1d3350;
+    color: #e6f1ff;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.boton-control:hover {
+    background: #61dafb;
+    color: #070b14;
+}
+
+/* ── Pie de página (tarea) ── */
+.pie {
+    text-align: center;
+    color: #8aa4c2;
+    font-size: 0.85rem;
+}
+
+/* ── Siguiente canción (bonus) ── */
+.siguiente {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #1d3350;
+    color: #8aa4c2;
+    font-size: 0.9rem;
+}
