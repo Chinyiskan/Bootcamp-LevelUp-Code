@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Encabezado from "./components/Encabezado.jsx";
 import TarjetaCancion from "./components/TarjetaCancion.jsx";
+import PedidoCancion from "./components/PedidoCancion.jsx";
 import Reproductor from "./components/Reproductor.jsx";
 import PiePagina from "./components/PiePagina.jsx";
 import Seccion from "./components/Seccion.jsx";
@@ -54,6 +55,9 @@ function App() {
             ) : (
                 <p className="playlist-vacia">Aún no hay canciones en la estación</p>
             )}
+
+            {/* Home Challenge, Ticket 1: el formulario va debajo de la playlist, antes del reproductor */}
+            <PedidoCancion />
 
             {/* Clase, Ticket 1: el reproductor reemplaza a Controles */}
             <Reproductor />
