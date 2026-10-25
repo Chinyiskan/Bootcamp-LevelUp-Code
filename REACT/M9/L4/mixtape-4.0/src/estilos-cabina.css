@@ -1,0 +1,284 @@
+/* ── Radio Umbral: estilos propios de la cabina (Tarea) ─────────────
+   Temática: synthwave nocturno. Violeta de noche, rosa neón y dorado,
+   con un toque del cian de React. Se carga al final, así que gana sobre los otros CSS. */
+
+:root {
+    --cabina-borde: #3a2763;
+    --cabina-suave: #b9a7d9;
+    --cabina-dorado: #ffc857;
+    --cabina-noche: #0b0716;
+    --cabina-panel: #241544;
+    --cabina-texto: #f3eaff;
+    --cabina-cian: #61dafb;
+}
+
+/* ── Ticket 1: paleta aplicada a toda la app ── */
+
+.logo {
+    text-shadow: 0 0 18px rgba(255, 95, 162, 0.55);
+}
+
+.cabina-logo {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+}
+
+.encabezado-datos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.contador,
+.contador-favoritas {
+    margin-top: 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--cabina-panel);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.contador {
+    color: var(--cabina-cian);
+}
+
+.contador-favoritas {
+    color: var(--cabina-dorado);
+}
+
+.seccion-titulo,
+.tarjeta-detalle,
+.cola-contador,
+.cola-vacia,
+.pedido label,
+.pedido-quien,
+.reproductor-estado,
+.contador-letras,
+.playlist-vacia,
+.pie {
+    color: var(--cabina-suave);
+}
+
+.seccion-titulo {
+    color: var(--cabina-dorado);
+}
+
+.tarjeta,
+.cola,
+.pedido,
+.pedido-item,
+.buscador,
+.pedido input,
+.boton-mini,
+.boton-favorita,
+.reproductor {
+    border-color: var(--cabina-borde);
+}
+
+.pedido-item,
+.pedido input {
+    background: var(--cabina-noche);
+}
+
+.buscador {
+    background: var(--cabina-fondo);
+    color: var(--cabina-texto);
+}
+
+.buscador:focus {
+    outline-color: var(--cabina-acento);
+}
+
+.pedido button,
+.boton-play {
+    background: var(--cabina-acento);
+    color: var(--cabina-noche);
+}
+
+.pedido button:disabled,
+.boton-mini,
+.boton-control,
+.boton-favorita,
+.barra-energia,
+.barra-progreso {
+    background: var(--cabina-borde);
+}
+
+.barra-energia-relleno,
+.barra-progreso-relleno,
+.ecualizador span {
+    background: linear-gradient(90deg, var(--cabina-acento), var(--cabina-dorado));
+}
+
+/* El play va después de la regla general de botones para que conserve el color de acento */
+.boton-control.boton-play {
+    background: var(--cabina-acento);
+    color: var(--cabina-noche);
+}
+
+.boton-control:hover {
+    background: var(--cabina-dorado);
+    color: var(--cabina-noche);
+}
+
+.reproductor {
+    background: #120a24;
+}
+
+.reproductor-artista {
+    color: var(--cabina-acento);
+}
+
+.etiqueta-favorita {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(11, 7, 22, 0.85);
+    color: var(--cabina-dorado);
+}
+
+/* ── Ticket 3: favoritas ── */
+
+.tarjeta.es-favorita {
+    border-color: var(--cabina-dorado);
+}
+
+.boton-favorita.activa {
+    background: var(--cabina-dorado);
+    border-color: var(--cabina-dorado);
+    color: var(--cabina-noche);
+}
+
+/* ── Ticket 2: Canción del día ── */
+
+.del-dia {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--cabina-acento);
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--cabina-panel), var(--cabina-fondo));
+    box-shadow: 0 0 24px rgba(255, 95, 162, 0.18);
+}
+
+.del-dia-etiqueta {
+    grid-column: 1 / -1;
+    color: var(--cabina-dorado);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.del-dia-cuerpo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    animation: entrar 0.35s ease-out;
+}
+
+.del-dia-portada {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.del-dia-textos {
+    min-width: 0;
+}
+
+.del-dia-titulo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.del-dia-artista {
+    color: var(--cabina-acento);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.del-dia-nota {
+    margin-top: 2px;
+    color: var(--cabina-suave);
+    font-size: 0.8rem;
+}
+
+.del-dia-boton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 999px;
+    background: var(--cabina-acento);
+    color: var(--cabina-noche);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Ticket 4: pulido ── */
+
+.tarjeta {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tarjeta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--cabina-acento);
+}
+
+button {
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.boton-favorita:hover,
+.del-dia-boton:hover,
+.pedido button:hover:not(:disabled) {
+    filter: brightness(1.12);
+}
+
+/* El teclado también tiene que ver dónde está */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--cabina-dorado);
+    outline-offset: 2px;
+}
+
+/* Quien pidió menos movimiento en su sistema no ve animaciones */
+@media (prefers-reduced-motion: reduce) {
+    .tarjeta,
+    button,
+    .del-dia-cuerpo {
+        transition: none;
+        animation: none;
+    }
+
+    .tarjeta:hover {
+        transform: none;
+    }
+}

@@ -1,0 +1,200 @@
+/* Estilos nuevos de la Lección 3 (clase y Home Challenge).
+   Se cargan después de index.css y estilos-l2.css. Ya vienen listos: tu trabajo es el JSX. */
+
+/* ── Reproductor: barra fija abajo ────────── */
+
+.reproductor {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    padding: 14px 16px 16px;
+    background: #0a111d;
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.5);
+    border-top: 1px solid #1d3350;
+    border-radius: 16px 16px 0 0;
+}
+
+.reproductor-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.reproductor-portada {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.reproductor-textos {
+    flex: 1;
+    min-width: 0;
+}
+
+.reproductor-estado {
+    color: #8aa4c2;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.reproductor-titulo {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reproductor-artista {
+    color: #61dafb;
+    font-size: 0.85rem;
+}
+
+.reproductor-aviso {
+    color: #ffb86b;
+    font-size: 0.75rem;
+}
+
+.reproductor .controles {
+    margin-top: 12px;
+}
+
+.boton-control {
+    display: grid;
+    place-items: center;
+}
+
+.boton-play {
+    width: 60px;
+    height: 60px;
+    background: #61dafb;
+    color: #070b14;
+}
+
+.boton-play:hover {
+    background: #a5ecff;
+}
+
+/* Ticket 1: ecualizador. Las barritas se animan solas */
+.ecualizador {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+}
+
+.ecualizador span {
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    background: #61dafb;
+    transform-origin: bottom;
+    animation: rebote 0.9s ease-in-out infinite;
+}
+
+.ecualizador span:nth-child(2) { animation-delay: -0.3s; }
+.ecualizador span:nth-child(3) { animation-delay: -0.6s; }
+.ecualizador span:nth-child(4) { animation-delay: -0.15s; }
+
+@keyframes rebote {
+    0%, 100% { transform: scaleY(0.25); }
+    50% { transform: scaleY(1); }
+}
+
+/* Ticket 3: barra de progreso */
+.barra-progreso {
+    margin-top: 12px;
+    height: 5px;
+    border-radius: 999px;
+    background: #1d3350;
+    overflow: hidden;
+}
+
+.barra-progreso-relleno {
+    height: 100%;
+    background: #61dafb;
+}
+
+/* Bonus de clase: buscador */
+.buscador {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border: 1px solid #1d3350;
+    border-radius: 12px;
+    background: #0f1a2b;
+    color: #e6f1ff;
+    font-size: 1rem;
+}
+
+.buscador:focus {
+    outline: 2px solid #61dafb;
+    border-color: transparent;
+}
+
+/* ── Home Challenge: pedidos a la cabina ──── */
+
+.pedido {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: #0f1a2b;
+    border: 1px solid #1d3350;
+    border-radius: 20px;
+}
+
+.pedido label {
+    color: #8aa4c2;
+    font-size: 0.85rem;
+}
+
+.pedido input {
+    padding: 10px 14px;
+    border: 1px solid #1d3350;
+    border-radius: 10px;
+    background: #070b14;
+    color: #e6f1ff;
+    font-size: 1rem;
+}
+
+.pedido button {
+    margin-top: 6px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #61dafb;
+    color: #070b14;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pedido button:disabled {
+    background: #1d3350;
+    color: #8aa4c2;
+    cursor: not-allowed;
+}
+
+.pedido-error {
+    color: #ff8fab;
+    font-size: 0.9rem;
+}
+
+.pedido-exito {
+    color: #7dffb3;
+    font-size: 0.9rem;
+}
+
+/* Bonus del Home Challenge */
+.contador-letras {
+    align-self: flex-end;
+    color: #8aa4c2;
+    font-size: 0.8rem;
+}
+
+.contador-letras-rojo {
+    color: #ff8fab;
+    font-weight: 700;
+}

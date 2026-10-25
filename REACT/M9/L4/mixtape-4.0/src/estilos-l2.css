@@ -1,0 +1,109 @@
+/* Estilos nuevos de la Lección 2 (clase y Home Challenge).
+   Se cargan después de index.css, así que lo que se repite aquí lo reemplaza. */
+
+/* La app se ensancha para que quepan varias tarjetas */
+.app {
+    max-width: 860px;
+    padding-bottom: 0;
+}
+
+/* Mientras la tarjeta esté sola (antes del Ticket 2), conserva su tamaño de siempre */
+.app > .tarjeta {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+/* ── Playlist ─────────────────────────────── */
+
+.playlist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta {
+    position: relative;
+    padding: 16px;
+}
+
+.tarjeta-portada {
+    object-fit: cover;
+}
+
+.tarjeta-titulo {
+    margin-top: 14px;
+    font-size: 1.2rem;
+}
+
+/* Ticket 3 de clase */
+.etiqueta-favorita {
+    position: absolute;
+    top: 26px;
+    left: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(7, 11, 20, 0.85);
+    color: #ff8fab;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Bonus de clase */
+.contador {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #1d3350;
+    color: #61dafb;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Controles: cuando salen de la tarjeta (Ticket 1) se vuelven una barra fija abajo */
+.app > .controles {
+    position: sticky;
+    bottom: 0;
+    margin-top: 0;
+    padding: 16px;
+    background: rgba(7, 11, 20, 0.92);
+    border-top: 1px solid #1d3350;
+}
+
+.pie {
+    padding-bottom: 24px;
+}
+
+/* ── Home Challenge ───────────────────────── */
+
+/* Ticket 1 */
+.seccion-titulo {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    color: #8aa4c2;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Ticket 2 */
+.barra-energia {
+    margin-top: 10px;
+    height: 6px;
+    border-radius: 999px;
+    background: #1d3350;
+    overflow: hidden;
+}
+
+.barra-energia-relleno {
+    height: 100%;
+    border-radius: 999px;
+    background: #61dafb;
+}
+
+/* Bonus */
+.playlist-vacia {
+    text-align: center;
+    color: #8aa4c2;
+    padding: 40px 0;
+}

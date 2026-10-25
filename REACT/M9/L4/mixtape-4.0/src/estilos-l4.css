@@ -1,0 +1,185 @@
+/* Estilos nuevos de la Lección 4 (clase y Home Challenge).
+   Se cargan después de index.css, estilos-l2.css y estilos-l3.css. Ya vienen listos: tu trabajo es el JSX. */
+
+/* ── Colores de tu cabina (Home Challenge, Ticket 3) ──────────
+   Cambia estos dos valores para personalizar tu Mixtape. */
+:root {
+    --cabina-acento: #ff5fa2;
+    --cabina-fondo: #1a1033;
+}
+
+.logo,
+.tarjeta-artista {
+    color: var(--cabina-acento);
+}
+
+.tarjeta,
+.cola,
+.pedido {
+    background: var(--cabina-fondo);
+}
+
+/* ── Clase: la cola de pedidos ─────────────── */
+
+.cola {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid #1d3350;
+    border-radius: 20px;
+}
+
+.cola-contador {
+    color: #8aa4c2;
+    font-size: 0.9rem;
+}
+
+.cola-vacia {
+    color: #8aa4c2;
+    text-align: center;
+    padding: 12px 0;
+}
+
+.cola-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pedido-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #070b14;
+    border: 1px solid #1d3350;
+    border-radius: 14px;
+}
+
+.pedido-item.sono {
+    opacity: 0.55;
+}
+
+.pedido-item.sono .pedido-titulo {
+    text-decoration: line-through;
+}
+
+.pedido-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pedido-titulo {
+    font-weight: 700;
+}
+
+.pedido-quien {
+    color: #8aa4c2;
+    font-size: 0.85rem;
+}
+
+.pedido-acciones {
+    display: flex;
+    gap: 8px;
+}
+
+.boton-mini {
+    padding: 8px 12px;
+    border: 1px solid #1d3350;
+    border-radius: 10px;
+    background: #1d3350;
+    color: #e6f1ff;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.boton-mini:hover {
+    background: var(--cabina-acento);
+    color: #070b14;
+}
+
+.boton-mini-peligro:hover {
+    background: #ff8fab;
+    color: #070b14;
+}
+
+/* Extra de clase: botón para limpiar los que ya sonaron */
+.boton-limpiar {
+    align-self: flex-start;
+    padding: 8px 12px;
+    border: 1px dashed #8aa4c2;
+    border-radius: 10px;
+    background: transparent;
+    color: #8aa4c2;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* ── Home Challenge: playlist viva ─────────── */
+
+.contador-favoritas {
+    margin-top: 4px;
+    color: #ffb86b;
+    font-size: 0.9rem;
+}
+
+.cabina-logo {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px;
+    display: block;
+}
+
+.tarjeta-acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.boton-favorita,
+.boton-quitar {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #1d3350;
+    border-radius: 10px;
+    background: #1d3350;
+    color: #e6f1ff;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.boton-favorita.activa {
+    background: #ffb86b;
+    border-color: #ffb86b;
+    color: #070b14;
+}
+
+.boton-quitar:hover {
+    background: #ff8fab;
+    border-color: #ff8fab;
+    color: #070b14;
+}
+
+.boton-restaurar {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--cabina-acento);
+    color: #070b14;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Bonus: casilla "Solo favoritas" */
+.solo-favoritas {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: #8aa4c2;
+    font-size: 0.9rem;
+}
