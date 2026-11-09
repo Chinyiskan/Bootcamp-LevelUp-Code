@@ -1,0 +1,282 @@
+/* Estilos del Mercado Orbital. Ya vienen listos: no hace falta tocarlos. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: radial-gradient(circle at top, #10233a 0%, #070d18 70%);
+    color: #e6f6ff;
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Encabezado */
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1px solid #1f4d6b;
+    border-radius: 14px;
+    background: #0c1a2b;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+}
+
+.encabezado h1 {
+    font-size: 1.6rem;
+    color: #61dafb;
+}
+
+.subtitulo {
+    font-size: 0.9rem;
+    color: #8fb3c9;
+}
+
+.boton-carrito {
+    background: #61dafb;
+    color: #06121f;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.contador {
+    display: inline-block;
+    min-width: 26px;
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #06121f;
+    color: #61dafb;
+}
+
+/* Bienvenida */
+.bienvenida {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #0f2a44, #0b1828);
+}
+
+.bienvenida img {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    border: 2px solid #1f4d6b;
+}
+
+.bienvenida h2 {
+    color: #61dafb;
+    margin-bottom: 6px;
+}
+
+/* Catálogo */
+.catalogo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.tarjeta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid #1f4d6b;
+    border-radius: 14px;
+    background: #0c1a2b;
+}
+
+.tarjeta-imagen {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    image-rendering: pixelated;
+    border-radius: 10px;
+    background: #091422;
+}
+
+.etiqueta {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #133a57;
+    color: #9fe6ff;
+}
+
+.precio {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffd166;
+}
+
+.boton-agregar {
+    margin-top: auto;
+    padding: 10px;
+    border: 1px solid #61dafb;
+    border-radius: 10px;
+    background: transparent;
+    color: #61dafb;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-agregar:hover {
+    background: #61dafb;
+    color: #06121f;
+}
+
+/* Aviso flotante */
+.aviso {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    border-radius: 12px;
+    background: #61dafb;
+    color: #06121f;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Panel del carrito */
+.fondo-panel {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 8, 15, 0.7);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.panel {
+    width: min(380px, 100%);
+    height: 100%;
+    padding: 20px;
+    background: #0c1a2b;
+    border-left: 1px solid #1f4d6b;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.panel-cabeza {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel h2 {
+    color: #61dafb;
+}
+
+.boton-cerrar {
+    background: transparent;
+    border: 1px solid #8fb3c9;
+    color: #8fb3c9;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.lista-carrito {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lista-carrito li {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #091422;
+}
+
+.lista-carrito button {
+    background: transparent;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    border-radius: 8px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.carrito-vacio {
+    text-align: center;
+    color: #8fb3c9;
+}
+
+.carrito-vacio img {
+    width: 160px;
+    image-rendering: pixelated;
+}
+
+.total {
+    margin-top: auto;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffd166;
+}
+
+/* Tarea: oferta relámpago y reloj de la estación (ya listos para usar) */
+.oferta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px 18px;
+    border: 1px dashed #ffd166;
+    border-radius: 12px;
+    background: #2a2210;
+    color: #ffe3a3;
+}
+
+.cuenta {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #ffd166;
+}
+
+.oferta-terminada {
+    border-color: #5b6b78;
+    background: #121a24;
+    color: #8fb3c9;
+}
+
+.reloj {
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    color: #9fe6ff;
+}
